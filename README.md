@@ -1,4 +1,4 @@
-# Rancher Training 
+https://github.com/argoproj/argo-cd/releases/download/v2.6.4/argocd-linux-amd64# Rancher Training 
 ## *Multi-cluster-management from installations to CI/CD pipelines*
 
 ### Lab 1. [Install Rancher Quick-Start](./docs/Lab1-install-rancher-quick-start.md)
