@@ -2,10 +2,15 @@
 
 - rke2 설치 스크립트를 이용하여 설치합니다.
 - 인터넷 연결이 가능한 환경에서 실행합니다.
+- sudo 권한이 있는 사용자 계정과 4 Core, 16 Gi, 100 GB VM 3기를 준비합니다.
 
 ```bash
+
+# vm에 로그인 후
+$ sudo -i
 $ curl -sfL https://get.rke2.io | sh -
 
+# (Optional)
 # 클러스터 버전 지정 시 INSTALL_RKE2_VERSION 지정
 # Rancher 2.7.3 버전은 RKE2 1.26 이하 지원
 $ curl -sfL https://get.rke2.io | INSTALL_RKE2_VERSION=v1.25.9+rke2r1 sh -
