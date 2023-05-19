@@ -22,7 +22,6 @@ $ curl -sfL https://get.rke2.io | INSTALL_RKE2_VERSION=v1.25.9+rke2r1 sh -
 
 
 ```bash
-$ sudo -i
 $ systemctl enable rke2-server --now
 $ systemctl status -l rke2-server
 $ journalctl -fa
