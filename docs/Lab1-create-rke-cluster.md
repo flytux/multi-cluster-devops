@@ -57,3 +57,26 @@ EOF
 
 $ source ~/.bashrc
 ```
+**2) RKE2 Worker Node 추가**
+
+- 위에서 설치한 RKE2 클러스터에 Worker Node를 연결합니다.
+- 연결할 마스터노드의 IP 정보와 클러스터 토큰을 확인합니다.
+- 연결 정보를 설정하고 rke2 설치 명령어를 통해 설치합니다.
+
+```bash
+# 마스터 노드의 IP 확인
+$ ip a | grep inet
+
+# 클러스터 토큰 확인
+$ sudo cat /var/lib/rancher/rke2/server/token
+
+# Worker Node에 ssh 접속
+$ sudo -i
+$ export INSTALL_RKE2_VERSION=v1.25.9+rke2r1
+$ curl -sfL https://get.rke2.io | INSTALL_RKE2_TYPE="agent" sh -
+$ mkdir -p /etc/rancher/rke2/
+$ cat <<EOF >> /etc/rancher/rke2/config.yaml
+server: https://마스터노드 IP:9345
+token: 클러스터 토큰
+EOF
+$ systemctl enable rke2-agent.service --now
