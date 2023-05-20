@@ -1,8 +1,44 @@
 ### Lab 4. Argo workflow CI/CD
 
 
+**1) Docker Registry 설치**
 
-**1) Argo workflow Install**
+```bash
+$ helm repo add twuni https://helm.twun.io
+$ helm fetch twuni/docker-registry
+$ cat << EOF >> value.yaml
+service:
+  name: registry
+  type: NodePort
+  port: 5000
+  nodePort: 30005
+persistence:
+  accessMode: 'ReadWriteOnce'
+  enabled: true
+  size: 10Gi
+  storageClass: 'local-path'
+EOF
+$ helm install docker-registry -f values.yaml docker-registry-2.2.2.tgz -n registry --create-namespace
+$ curl -v localhost:30005/v2/_catalog
+
+# 컨테이너 런타임에 Private Registry 인증 / insecure 설정
+$ cat << EOF | sudo tee /etc/rancher/rke2/registries.yaml
+mirrors:
+  docker.io:
+    endpoint:
+      - "http://10.214.156.72:30005"
+configs:
+  "10.214.156.72:30005":
+    auth:
+      username: admin # this is the registry username
+      password: 1 # this is the registry password
+    tls:
+      insecure_skip_verify: true
+EOF
+$ systemctl restart rke2-server
+```
+
+**2) Argo workflow 설치**
 
 
 ~~~bash
@@ -49,7 +85,7 @@ $ mv ./argo-linux-amd64 /usr/local/bin/argo
 $ argo version
 ~~~
 
-**2) Run Sample WorkflowTemplate**
+**3) Run Sample WorkflowTemplate**
 
 ```bash
 apiVersion: argoproj.io/v1alpha1
