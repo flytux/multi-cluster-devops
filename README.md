@@ -7,4 +7,3 @@
 ### Lab 4. [Enable Service Mesh with Istio](./docs/Lab4-service-mesh-with-istio.md)
 ### Lab 5. [Cloud Native CI/CD with tekton and argocd](./docs/Lab5-cloud-native-cicd-with-tekton-argocd.md)
 ### Lab 6. [Enable Logging Operator and ELK stack](./docs/Lab6-enable-logging-operator-and-elk-stack.md)
-### A1. [Spring Service Monitoring with Prometheus and Grafana](./docs/A1-spring-monitoring-with-prometheus-grafana.md)
