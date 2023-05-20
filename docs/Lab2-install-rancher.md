@@ -19,11 +19,9 @@ $ helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
 # Rancher 설치
 # 원하는 도메인 명 등록 후 해당 도메인 명으로 접속
 $ helm install rancher rancher-latest/rancher \
-  --set hostname=rancher.kw01 \ 
-  --set bootstrapPassword=admin \
-  --set replicas=1 \
-  --set global.cattle.psp.enabled=false \
-  --create-namespace -n cattle-system
+--set hostname=rancher.kw01 --set bootstrapPassword=admin \
+--set replicas=1 --set global.cattle.psp.enabled=false \
+--create-namespace -n cattle-system
 
 # Ranubectlcher 구동 확인
 $ kubectl g` pods -l app=rancher -A
