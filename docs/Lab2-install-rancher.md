@@ -84,7 +84,7 @@ $ chmod +x kubectl && sudo mv kubectl /usr/local/bin
 # hosts 파일에 Rancher host명 추가
 $ cat <<EOF | sudo tee /etc/hosts
 # 10.2.100.100  rancher.kw01
-랜처.서버.IP.명  rancher.kw01 # 설치시 등록한 도메인 명 등록
+랜처.서버.IP.명  rancher.kw01 argocd.kw01 gitea.kw01 argo.kw01 # 설치시 등록한 도메인 명 등록
 EOF
 
 # 복사한 Registration 명령어 실행
