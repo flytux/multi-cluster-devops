@@ -216,13 +216,36 @@ $ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.p
 ```
 - https://argocd.kw01 admin / 초기 패스워드로 로그인합니다.
 
+```bash
+# ArgoCD App 등록
+
+$ kubectl -n argocd apply -f - <<"EOF"
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kw-mvn
+  namespace: argocd
+spec:
+  destination:
+    namespace: deploy
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: dev
+    repoURL: http://gitea.gitea:3000/argo/kw-mvn-deploy
+    targetRevision: kust
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+EOF
+```
 ---
 
 **3) Argo workflow 설치**
 
 - Argo Workflow를 설치하고 접속 설정을 적용합니다.
 
-~~~bash
+```bash
 # Install argo-workflow
 $ kubectl create namespace argo
 $ kubectl apply -f https://github.com/argoproj/argo-workflows/releases/download/v3.4.7/install.yaml
@@ -264,22 +287,25 @@ $ mv ./argo-linux-amd64 /usr/local/bin/argo
 
 # Test installation
 $ argo version
-~~~
-
+```
 ---
 
 **3) Run Sample WorkflowTemplate**
 
 - SpringBoot 샘플 어플리케이션을 maven 빌드 후 컨테이너 이미지 저장소에 푸쉬 합니다.
-- ArgoCD Gitops 레파지토지와 동기화하여 자동 배포를 적용합니다. (TBD)
-- Git 인증 정보 / Docker Registry 인증 정보 추가 (TBD)
+- ArgoCD Gitops 레파지토지와 동기화하여 자동 배포를 적용합니다.
+- Git 인증 정보 / Docker Registry 인증 정보 추가
 - Git Trigger를 통한 파이프라인 자동 구동 추가 (TBD)
 - Approval / 메시지 통지등 관리 
 
 ```bash
-apiVersion: argoproj.io/v1alpha1
-kind: Workflow
+$ kubectl create secret generic gitops-secret --from-literal=gitops-repo-secret='http://argo:12345678@gitea.gitea:3000'
+$ kubectl create secret generic argocd-credentials-secret --from-literal=argocd-user-password='e9P6sidSgm41J2lD' --from-literal=argocd-user-id='admin'
+
+# WorkflowTemplate
+
 metadata:
+  name: mvn-build-kldgb
   generateName: mvn-build-
   namespace: argo
 spec:
@@ -293,11 +319,25 @@ spec:
             value: main
           - name: image-url
             value: 10.214.156.72:30005/kw-mvn
-          - name: image-tag
-            value: newTag
+          - name: stage
+            value: dev
+          - name: gitops-url
+            value: http://gitea.gitea:3000/argo/kw-mvn-deploy.git
+          - name: gitops-branch
+            value: kust
+          - name: argocd-app-name
+            value: kw-mvn
+          - name: argocd-url
+            value: argocd-server.argocd
       outputs: {}
       metadata: {}
       steps:
+        - - name: get-build-id
+            template: build-id
+            arguments:
+              parameters:
+                - name: stage
+                  value: '{{inputs.parameters.stage}}'
         - - name: clone-sources
             template: git-clone
             arguments:
@@ -313,7 +353,51 @@ spec:
                 - name: image-url
                   value: '{{inputs.parameters.image-url}}'
                 - name: image-tag
-                  value: '{{inputs.parameters.image-tag}}'
+                  value: '{{steps.get-build-id.outputs.parameters.build-id}}'
+        - - name: argo-update
+            template: update-manifest
+            arguments:
+              parameters:
+                - name: gitops-url
+                  value: '{{inputs.parameters.gitops-url}}'
+                - name: gitops-branch
+                  value: '{{inputs.parameters.gitops-branch}}'
+                - name: image-tag
+                  value: '{{steps.get-build-id.outputs.parameters.build-id}}'
+        - - name: argo-sync
+            template: sync-argo-app
+            arguments:
+              parameters:
+                - name: argocd-app-name
+                  value: '{{inputs.parameters.argocd-app-name}}'
+                - name: argocd-url
+                  value: '{{inputs.parameters.argocd-url}}'
+    - name: build-id
+      inputs:
+        parameters:
+          - name: stage
+      outputs:
+        parameters:
+          - name: build-id
+            valueFrom:
+              path: /workspace/result
+      metadata: {}
+      script:
+        name: ''
+        image: bash:5.0.18
+        command:
+          - sh
+        workingDir: /workspace
+        resources: {}
+        volumeMounts:
+          - name: workdir
+            mountPath: /workspace
+        source: |
+          ts=`date "+%y%m%d%H%M%S"`
+          echo "Current Timestamp: ${ts}"
+          id=`echo $RANDOM | md5sum | head -c 6`
+          buildId={{inputs.parameters.stage}}-${ts}-${id}
+          echo ${buildId} | tr -d "\n" | tee /workspace/result
     - name: git-clone
       inputs:
         parameters:
@@ -335,7 +419,6 @@ spec:
           rm -rf *
           rm -rf .git
           rm -rf .mvn
-
           git init
           git remote add origin "{{inputs.parameters.git-url}}"
           git fetch --depth 1 origin "{{inputs.parameters.revision}}"
@@ -368,6 +451,79 @@ spec:
             mountPath: /workspace
           - name: m2-cache
             mountPath: /workspace/.m2
+    - name: update-manifest
+      inputs:
+        parameters:
+          - name: gitops-url
+          - name: gitops-branch
+          - name: image-tag
+      outputs: {}
+      metadata: {}
+      script:
+        name: ''
+        image: alpine/git:v2.26.2
+        command:
+          - sh
+        workingDir: /workspace
+        env:
+          - name: GITOPS_REPO_CREDENTIALS
+            valueFrom:
+              secretKeyRef:
+                name: gitops-secret
+                key: gitops-repo-secret
+        resources: {}
+        source: |
+
+          mkdir deploy && cd deploy
+          git init  
+          echo $GITOPS_REPO_CREDENTIALS >  ~/.git-credentials
+          cat ~/.git-credentials  
+          git config credential.helper store
+          git remote add origin {{inputs.parameters.gitops-url}}  
+          git remote -v 
+          git -c http.sslVerify=false fetch --depth 1 origin {{inputs.parameters.gitops-branch}}  
+          git checkout {{inputs.parameters.gitops-branch}}  
+          ls -al 
+          echo "updating image to {{inputs.parameters.image-tag}}" 
+          sed -i "s|newTag:.*$|newTag: {{inputs.parameters.image-tag}}|" dev/kustomization.yaml 
+          cat dev/kustomization.yaml | grep newTag 
+          git config --global user.email "argo@devops" 
+          git config --global user.name "Argo Workflow Pipelines"
+          git add . 
+          git commit --allow-empty -m "[argo] updating image to {{inputs.parameters.image-tag}}" 
+          git -c http.sslVerify=false push origin {{inputs.parameters.gitops-branch}}
+    - name: sync-argo-app
+      inputs:
+        parameters:
+          - name: argocd-app-name
+          - name: argocd-url
+      outputs: {}
+      metadata: {}
+      script:
+        name: ''
+        image: quay.io/argoproj/argocd:v2.7.2
+        command:
+          - sh
+        env:
+          - name: ARGO_USER_ID
+            valueFrom:
+              secretKeyRef:
+                name: argocd-credentials-secret
+                key: argocd-user-id
+          - name: ARGO_USER_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: argocd-credentials-secret
+                key: argocd-user-password
+        resources: {}
+        source: >
+          argocd login {{inputs.parameters.argocd-url}} --username $ARGO_USER_ID
+          --password $ARGO_USER_PASSWORD --insecure
+
+          argocd app sync {{inputs.parameters.argocd-app-name}} --insecure
+
+          argocd app wait {{inputs.parameters.argocd-app-name}} --sync --health
+          --operation --insecure
   entrypoint: mvn-build
   arguments: {}
   volumes:
@@ -376,5 +532,6 @@ spec:
         claimName: pvc-argo-build-workspace
     - name: m2-cache
       persistentVolumeClaim:
-        claimName: pvc-argo-build-cache   
+        claimName: pvc-argo-build-cache
+
  ```
