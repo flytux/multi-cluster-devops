@@ -1,3 +1,9 @@
+### Lab-1 Create RKE Cluster
+
+- rke2 설치하고 워커노드를 추가합니다.
+
+---
+
 **1) RKE2 cluster 설치**
 
 - rke2 설치 스크립트를 이용하여 설치합니다.
@@ -56,6 +62,9 @@ EOF
 
 $ source ~/.bashrc
 ```
+
+---
+
 **2) RKE2 Worker Node 추가**
 
 - 위에서 설치한 RKE2 클러스터에 Worker Node를 연결합니다.
