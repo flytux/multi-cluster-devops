@@ -26,7 +26,7 @@ $ helm install rancher rancher-latest/rancher \
 --create-namespace -n cattle-system
 
 # Ranubectlcher 구동 확인
-$ kubectl g` pods -l app=rancher -A
+$ kubectl get pods -l app=rancher -A
 $ kubectl rollout status deploy rancher -n cattle-system
 
 
