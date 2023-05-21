@@ -113,8 +113,9 @@ EOF
 
 # ArgoCD 초기 패스워드 확인
 $ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
-
 ```
+- 
+- https://argocd.kw01
 
 ---
 
