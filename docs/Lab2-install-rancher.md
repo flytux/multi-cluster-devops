@@ -4,6 +4,8 @@
 - Rancher는 kubernetes 클러스터 관리를 위해 tls 통신을 기본으로 하여 cert-manager를 통한 인증서 관리가 필요합니다.
 - 랜처가 설치된 클러스터는 관리 클러스터 역할을 하고, 다른 서비스 클러스터를 연결하여 멀티 클러스터 환경을 관리합니다. 
 
+---
+
 **1. Install Rancher**
 
 ```bash
@@ -33,12 +35,10 @@ $ cat <<EOF | sudo tee /etc/hosts
 # 10.2.100.100  rancher.kw01
 랜처.서버.IP.명  rancher.kw01 # 설치시 등록한 도메인 명 등록
 EOF
-
 ```
-
 - https://rancher.kw01 접속 (admin / admin)
 
-
+---
 
 **2. Install Service Cluster**
 
@@ -67,12 +67,15 @@ $ curl -LO https://dl.k8s.io/release/v1.25.9/bin/linux/amd64/kubectl
 $ chmod +x kubectl && sudo mv kubectl /usr/local/bin
 ```
 
+---
+
 **3. Rancher에 설치된 클러스터 Import**
 
-- Rancher에 로그인 후 Cluster Import 기능으로 연결
-- Rancher Login > Import Existing > Import Any Kubernetes Cluster - Generic 
-- Cluster Name : rke2-svc > Create
-- Registration 화면의 2번째 명령어 복사 ex) "curl --insecure -sfL https://rancher.kw01/v3/import/vdhpnh5twscr54nbjsjjp7vhjltks6mjr9ppmx25rs4z7blrtzfz4t_c-m-wdghhcjm.yaml | kubectl apply -f -"
+- Rancher에 로그인 후 Cluster Import 기능으로 연결합니다.
+- Rancher Login > Import Existing > Import Any Kubernetes Cluster - Generic 을 선택합니다.
+- Cluster Name : rke2-svc > Create 를 실행합니다.
+- Registration 화면의 2번째 명령어를 복사하여 생성된 클러스터에서 실행합니다.  
+  *ex) "curl --insecure -sfL https://rancher.kw01/v3/import/vdhpnh5twscr54nbjsjjp7vhjltks6mjr9ppmx25rs4z7blrtzfz4t_c-m-wdghhcjm.yaml | kubectl apply -f -"*
 
 ```bash
 
