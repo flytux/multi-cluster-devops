@@ -71,7 +71,15 @@ $ cat /var/lib/rancher/rke2/agent/etc/containerd/config.toml
 
 ---
 
-**2) Argo workflow 설치**
+**2) ArgoCD 설치**
+
+```bash
+$ kubectl create namespace argocd
+$ kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+---
+
+**3) Argo workflow 설치**
 
 - Argo Workflow를 설치하고 접속 설정을 적용합니다.
 
