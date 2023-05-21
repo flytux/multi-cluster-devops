@@ -71,7 +71,107 @@ $ cat /var/lib/rancher/rke2/agent/etc/containerd/config.toml
 
 ---
 
-**2) ArgoCD 설치**
+**2) Gitea 설치**
+
+```bash
+$ kubectl apply -f - <<"EOF"
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: "gitea"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: gitea
+  name: gitea
+  labels:
+    app: gitea
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitea
+  template:
+    metadata:
+      labels:
+        app: gitea
+    spec:
+      containers:
+      - name: gitea
+        image: gitea/gitea:1.16
+        env:
+        - name: GITEA__webhook__ALLOWED_HOST_LIST
+          value: '*'
+        ports:
+        - containerPort: 3000
+          name: gitea
+        - containerPort: 22
+          name: git-ssh
+        volumeMounts:
+        - mountPath: /data
+          name: git-volume
+      volumes:
+      - name: git-volume
+        persistentVolumeClaim:
+          claimName: git-volume
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: gitea
+  name: git-volume
+spec:
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: gitea
+  name: gitea
+spec:
+  type: ClusterIP
+  selector:
+    app: gitea
+  ports:
+    - port: 3000
+      targetPort: 3000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: gitea
+  namespace: gitea
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: gitea.kw01
+    http:
+      paths:
+      - backend:
+          service:
+            name: gitea
+            port:
+              number: 3000
+        path: /
+        pathType: Prefix
+EOF
+```
+- http://gitea.kw01 에 접속합니다.
+- server domain과 접속 URL을 http://gitea.kw01 로 설정하고 저장합니다.
+- http://gitea.kw01에 접속하여 신규 계정을 생성합니다.
+- 사용자 ID : argo / 패스워드 : 12345678
+- argo 계정으로 로그인하여 New Migration으로 레파지토리를 import 합니다.
+- https://github.com/flytux/kw-mvn-deploy.git
+
+---
+
+**3) ArgoCD 설치**
 
 ```bash
 # ArgoCD 설치
@@ -114,8 +214,7 @@ EOF
 # ArgoCD 초기 패스워드 확인
 $ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 ```
-- 
-- https://argocd.kw01
+- https://argocd.kw01 admin / 초기 패스워드로 로그인합니다.
 
 ---
 
