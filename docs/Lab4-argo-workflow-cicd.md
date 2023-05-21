@@ -74,8 +74,47 @@ $ cat /var/lib/rancher/rke2/agent/etc/containerd/config.toml
 **2) ArgoCD 설치**
 
 ```bash
+# ArgoCD 설치
 $ kubectl create namespace argocd
 $ kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+# Ingress Controller 설정 변경
+$ kubectl edit ds -n kube-system rke2-ingress-nginx-controller
+
+# 61 줄에 아래 내용 추가
+    - --watch-ingress-without-class=true
+    - --enable-ssl-passthrough
+# 저장
+
+# Ingress 설정
+$ kubectl -n argocd apply -f - <<"EOF"  
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd-server-ingress
+  namespace: argocd
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+spec:
+  rules:
+  - host: argocd.kw01
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: argocd-server
+            port:
+              name: https
+EOF
+
+# ArgoCD 초기 패스워드 확인
+$ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+
+```
 
 ---
 
