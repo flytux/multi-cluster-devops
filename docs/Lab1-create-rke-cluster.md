@@ -1,4 +1,4 @@
-### Lab-1 Create RKE Cluster
+### Lab 1. Create RKE Cluster
 
 - rke2 설치하고 워커노드를 추가합니다.
 
