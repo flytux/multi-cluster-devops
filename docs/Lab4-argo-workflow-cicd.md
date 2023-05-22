@@ -33,12 +33,12 @@ $ helm install docker-registry -f values.yaml docker-registry-2.2.2.tgz -n regis
 
 $ curl -v localhost:30005/v2/_catalog
 
-# admin / 1 로 로그인
-$ nerdctl --insecure-registry login 10.214.156.72:30005
-
 # nerdctl download
 $ wget https://github.com/containerd/nerdctl/releases/download/v1.3.1/nerdctl-full-1.3.1-linux-amd64.tar.gz
 $ tar Cxzvvf /usr/local nerdctl-full-1.3.1-linux-amd64.tar.gz
+
+# admin / 1 로 로그인
+$ nerdctl --insecure-registry login 10.214.156.72:30005
 
 # nerdctl 옵션 설정
 $ cat << EOF >> /etc/containerd/config.toml .
