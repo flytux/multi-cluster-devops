@@ -303,8 +303,8 @@ $ argo version
 - Approval / 메시지 통지등 관리 
 
 ```bash
-$ kubectl create secret generic gitops-secret --from-literal=gitops-repo-secret='http://argo:12345678@gitea.gitea:3000'
-$ kubectl create secret generic argocd-credentials-secret --from-literal=argocd-user-password='e9P6sidSgm41J2lD' --from-literal=argocd-user-id='admin'
+$ kubectl create secret generic -n argo gitops-secret --from-literal=gitops-repo-secret='http://argo:12345678@gitea.gitea:3000'
+$ kubectl create secret generic -n argo argocd-credentials-secret --from-literal=argocd-user-password='7NKSA3w19yQ4XGAL' --from-literal=argocd-user-id='admin'
 
 # WorkflowTemplate
 
