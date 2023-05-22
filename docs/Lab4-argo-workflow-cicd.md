@@ -170,6 +170,7 @@ EOF
 - http://gitea.kw01에 접속하여 신규 계정을 생성합니다.
 - 사용자 ID : argo / 패스워드 : 12345678
 - argo 계정으로 로그인하여 New Migration으로 레파지토리를 import 합니다.
+- https://github.com/flytux/kw-mvn.git
 - https://github.com/flytux/kw-mvn-deploy.git
 
 ---
