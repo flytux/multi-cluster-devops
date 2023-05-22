@@ -1,6 +1,9 @@
 ### Lab 1. Create RKE Cluster
 
 - rke2 설치하고 워커노드를 추가합니다.
+- rke2 는 설치 스크립트를 이용하여 쉽게 설치할 수 있습니다.
+- rancher에서 지원하는 클러스터 버전에 차이가 있어 v1.26 이하를 지정하여 설치합니다.  
+  (https://github.com/rancher/rancher/releases/tag/v2.7.3)
 
 ---
 
