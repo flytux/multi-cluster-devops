@@ -51,29 +51,21 @@ EOF
 # admin / 1 로 로그인
 $ nerdctl --insecure-registry login 10.214.156.72:30005
 
-# nerdctl 옵션 설정
-$ cat << EOF >> /etc/containerd/config.toml .
-debug          = false
-debug_full     = false
-address        = "unix:///run/k3s/containerd/containerd.sock"
-namespace      = "k8s.io"
-cgroup_manager = "cgroupfs"
-hosts_dir      = ["/etc/containerd/certs.d", "/etc/docker/certs.d"]
-EOF
-
 # 컨테이너 런타임에 Private Registry 인증 / insecure 설정
 $ cat << EOF | sudo tee /etc/rancher/rke2/registries.yaml
-"10.214.156.72:30005":
+mirrors:
+  10.214.156.72:30005:
     endpoint:
-      - "http://10.214.156.72:30005"
+      - http://10.214.156.72:30005
 configs:
-  "10.214.156.72:30005":
+  10.214.156.72:30005:
     auth:
-      username: admin # this is the registry username
-      password: 1 # this is the registry password
+      username: admin 
+      password: 1 
     tls:
       insecure_skip_verify: true
 EOF
+
 $ systemctl restart rke2-server
 
 # 아래 파일에 insecure 및 인증 설정 추가 확인 
