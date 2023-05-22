@@ -37,6 +37,17 @@ $ curl -v localhost:30005/v2/_catalog
 $ wget https://github.com/containerd/nerdctl/releases/download/v1.3.1/nerdctl-full-1.3.1-linux-amd64.tar.gz
 $ tar Cxzvvf /usr/local nerdctl-full-1.3.1-linux-amd64.tar.gz
 
+# nerdctl 설정
+$ mkdir -p /etc/nerdctl
+$ cat << EOF >> /etc/nerdctl/nerdctl.toml
+debug          = false
+debug_full     = false
+address        = "unix:///run/k3s/containerd/containerd.sock"
+namespace      = "k8s.io"
+cgroup_manager = "cgroupfs"
+hosts_dir      = ["/etc/containerd/certs.d", "/etc/docker/certs.d"]
+EOF
+
 # admin / 1 로 로그인
 $ nerdctl --insecure-registry login 10.214.156.72:30005
 
