@@ -298,9 +298,8 @@ $ argo version
 
 - SpringBoot 샘플 어플리케이션을 maven 빌드 후 컨테이너 이미지 저장소에 푸쉬 합니다.
 - ArgoCD Gitops 레파지토지와 동기화하여 자동 배포를 적용합니다.
-- Git 인증 정보 / Docker Registry 인증 정보 추가
-- Git Trigger를 통한 파이프라인 자동 구동 추가 (TBD)
-- Approval / 메시지 통지등 관리 
+- Gitea와 ArgoCD 인증정보는 argo 네임스페이스에 secret으로 설정하여 적용합니다.
+- *Git Trigger를 통한 파이프라인 자동 구동 추가 (TBD)*
 
 ```bash
 $ kubectl create secret generic -n argo gitops-secret --from-literal=gitops-repo-secret='http://argo:12345678@gitea.gitea:3000'
