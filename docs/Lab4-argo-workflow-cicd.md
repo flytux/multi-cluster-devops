@@ -344,6 +344,7 @@ metadata:
   generateName: mvn-build-
   namespace: argo
 spec:
+  serviceAccountName: argo
   templates:
     - name: mvn-build
       inputs:
