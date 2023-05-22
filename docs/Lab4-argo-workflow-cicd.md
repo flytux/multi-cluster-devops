@@ -306,7 +306,38 @@ $ argo version
 $ kubectl create secret generic -n argo gitops-secret --from-literal=gitops-repo-secret='http://argo:12345678@gitea.gitea:3000'
 $ kubectl create secret generic -n argo argocd-credentials-secret --from-literal=argocd-user-password='7NKSA3w19yQ4XGAL' --from-literal=argocd-user-id='admin'
 
-# WorkflowTemplate
+# 파이프라인용 pvc 생성
+$ cat << EOF >> pvc-argo.yml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-argo-build-workspace
+  namespace: argo
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-argo-build-cache
+  namespace: argo
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: local-path
+EOF
+
+$ kubectl apply -f pvc-argo.yml
+
+# WorkflowTemplate 등록
 
 metadata:
   name: mvn-build-kldgb
