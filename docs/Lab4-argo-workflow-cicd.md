@@ -16,7 +16,7 @@
 $ helm repo add twuni https://helm.twun.io
 $ helm fetch twuni/docker-registry
 
-$ cat << EOF >> value.yaml
+$ cat << EOF >> values.yaml
 service:
   name: registry
   type: NodePort
