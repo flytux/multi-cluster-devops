@@ -245,7 +245,7 @@ EOF
 ```
 ---
 
-**3) Argo workflow 설치**
+**4) Argo workflow 설치**
 
 - Argo Workflow를 설치하고 접속 설정을 적용합니다.
 
@@ -294,7 +294,7 @@ $ argo version
 ```
 ---
 
-**3) Run Sample WorkflowTemplate**
+**5) Run Sample WorkflowTemplate**
 
 - SpringBoot 샘플 어플리케이션을 maven 빌드 후 컨테이너 이미지 저장소에 푸쉬 합니다.
 - ArgoCD Gitops 레파지토지와 동기화하여 자동 배포를 적용합니다.
@@ -570,3 +570,44 @@ spec:
         claimName: pvc-argo-build-cache
 
  ```
+---
+
+**6) Argo Events 설치**
+
+```bash
+# 네임스페이스, Argo Event 설치 (cluster scoped)
+$ kubectl create namespace argo-events
+$ kubectl apply -f https://raw.githubusercontent.com/argoproj/argo-events/stable/manifests/install.yaml
+# event bus 설치
+$ kubectl apply -n argo-events -f https://raw.githubusercontent.com/argoproj/argo-events/stable/examples/eventbus/native.yaml
+
+
+# 소스 레파지토리에서 main 브랜치 푸쉬시 웹훅을 통해 파이프라인이 기동되도록 설정합니다.
+$ cat << EOF >> gitea-event-source.yml
+apiVersion: argoproj.io/v1alpha1
+kind: EventSource
+metadata:
+  name: gitea-event-source
+spec:
+  type: "webhook"
+  service:
+    ports:
+      - port: 12000
+        targetPort: 12000
+  webhook:
+    # EventSource can run multiple HTTP servers. Simply define a unique port to start a new HTTP server
+    example:
+      # port to run HTTP server on
+      port: "12000"
+      # endpoint to listen to
+      endpoint: "/push"
+      # HTTP request method to allow. In this case, only POST requests are accepted
+      method: "POST"
+      filter:
+        expression: "(body.ref == 'refs/heads/main')"
+EOF
+```
+- https://gitea.kw01/argo/kw-mvn/settings/hooks
+- Add Webhook > Gitea 
+- Target URL 설정 : http://gitea-event-source-eventsource-svc.argo-events:12000/push
+- Test Delivery 클릭하여 확인
