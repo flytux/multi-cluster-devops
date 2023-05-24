@@ -339,7 +339,7 @@ $ kubectl apply -f pvc-argo.yml
 # WorkflowTemplate 등록
 
 metadata:
-  name: mvn-build-kldgb
+  name: mvn-build-webhook
   generateName: mvn-build-
   namespace: argo
 spec:
@@ -569,7 +569,7 @@ spec:
       persistentVolumeClaim:
         claimName: pvc-argo-build-cache
 
- ```
+```
 ---
 
 **6) Argo Events 설치**
@@ -584,6 +584,7 @@ $ kubectl apply -n argo-events -f https://raw.githubusercontent.com/argoproj/arg
 
 # 소스 레파지토리에서 main 브랜치 푸쉬시 웹훅을 통해 파이프라인이 기동되도록 설정합니다.
 $ cat << EOF >> gitea-event-source.yml
+---
 apiVersion: argoproj.io/v1alpha1
 kind: EventSource
 metadata:
@@ -605,9 +606,100 @@ spec:
       method: "POST"
       filter:
         expression: "(body.ref == 'refs/heads/main')"
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: gitea-push
+spec:
+  template:
+    serviceAccountName: argo-pipeline-runner
+  dependencies:
+    - name: build-dep
+      eventSourceName: gitea-event-source
+      eventName: gitea-push
+  triggers:
+    - template:
+        name: gitea-push
+        argoWorkflow:
+          group: argoproj.io
+          version: v1alpha1
+          resource: Workflow
+          operation: submit
+          metadata:
+            generateName: build-trigger-
+          source:
+            resource:
+              apiVersion: argoproj.io/v1alpha1
+              kind: Workflow
+              metadata:
+                name: build-trigger
+              spec:
+                workflowTemplateRef:
+                  name: mvn-build-webhook
 EOF
 ```
 - https://gitea.kw01/argo/kw-mvn/settings/hooks
 - Add Webhook > Gitea 
 - Target URL 설정 : http://gitea-event-source-eventsource-svc.argo-events:12000/push
 - Test Delivery 클릭하여 확인
+
+---
+
+**7) Trigger 설정**
+```bash
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: argo-pipeline-runner
+  namespace: argo
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: argo-pipeline-runner
+  namespace: argo-events
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: argo-pipeline-runner
+rules:
+  - apiGroups:
+      - argoproj.io
+    verbs:
+      - "*"
+    resources:
+      - workflows
+      - clusterworkflowtemplates
+      - workflowtemplates
+  - apiGroups:
+      - ''
+    resources:
+      - 'pods'
+    verbs:
+      - 'create'
+      - 'delete'
+      - 'get'
+      - 'list'
+      - 'patch'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: argo-pipeline-runner
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: argo-pipeline-runner
+subjects:
+  - kind: ServiceAccount
+    name: argo-pipeline-runner
+    namespace: argo
+  - kind: ServiceAccount
+    name: argo-pipeline-runner
+    namespace: argo-events
+---
+```
+
