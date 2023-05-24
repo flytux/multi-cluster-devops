@@ -397,9 +397,10 @@ spec:
           rm -rf .git
           rm -rf .mvn
           git init
-          git remote add origin "{{inputs.parameters.git-url}}"
-          git fetch --depth 1 origin "{{inputs.parameters.revision}}"
-          git checkout "{{inputs.parameters.revision}}"
+          git remote add origin {{inputs.parameters.git-url}}  
+          git fetch --depth 1 origin {{inputs.parameters.revision}} 
+          BRANCH=$(echo {{inputs.parameters.revision}} | cut -d/ -f3)
+          git checkout $BRANCH
   serviceAccountName: argo-pipeline-runner
 ---
 metadata:
