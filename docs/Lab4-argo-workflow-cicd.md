@@ -294,12 +294,11 @@ $ argo version
 ```
 ---
 
-**5) Run Sample WorkflowTemplate**
+**5) 파이프라인 구동 환경 구성**
 
 - SpringBoot 샘플 어플리케이션을 maven 빌드 후 컨테이너 이미지 저장소에 푸쉬 합니다.
 - ArgoCD Gitops 레파지토지와 동기화하여 자동 배포를 적용합니다.
 - Gitea와 ArgoCD 인증정보는 argo 네임스페이스에 secret으로 설정하여 적용합니다.
-- *Git Trigger를 통한 파이프라인 자동 구동 추가 (TBD)*
 
 ```bash
 $ kubectl create secret generic -n argo gitops-secret --from-literal=gitops-repo-secret='http://argo:12345678@gitea.gitea:3000'
@@ -335,78 +334,19 @@ spec:
 EOF
 
 $ kubectl apply -f pvc-argo.yml
+```
+---
 
-# WorkflowTemplate 등록
+**6) WorkflowTemplate 등록**
 
+```bash
+# WorkflowTemplate Revised
+---
 metadata:
-  name: mvn-build-webhook
-  generateName: mvn-build-
-  namespace: argo
+  name: build-id
+  namespace: argo-events
 spec:
-  serviceAccountName: argo
   templates:
-    - name: mvn-build
-      inputs:
-        parameters:
-          - name: git-url
-            value: https://github.com/flytux/kw-mvn.git
-          - name: revision
-            value: main
-          - name: image-url
-            value: 10.214.156.72:30005/kw-mvn
-          - name: stage
-            value: dev
-          - name: gitops-url
-            value: http://gitea.gitea:3000/argo/kw-mvn-deploy.git
-          - name: gitops-branch
-            value: kust
-          - name: argocd-app-name
-            value: kw-mvn
-          - name: argocd-url
-            value: argocd-server.argocd
-      outputs: {}
-      metadata: {}
-      steps:
-        - - name: get-build-id
-            template: build-id
-            arguments:
-              parameters:
-                - name: stage
-                  value: '{{inputs.parameters.stage}}'
-        - - name: clone-sources
-            template: git-clone
-            arguments:
-              parameters:
-                - name: git-url
-                  value: '{{inputs.parameters.git-url}}'
-                - name: revision
-                  value: '{{inputs.parameters.revision}}'
-        - - name: build-push
-            template: build-mvn
-            arguments:
-              parameters:
-                - name: image-url
-                  value: '{{inputs.parameters.image-url}}'
-                - name: image-tag
-                  value: '{{steps.get-build-id.outputs.parameters.build-id}}'
-        - - name: argo-update
-            template: update-manifest
-            arguments:
-              parameters:
-                - name: gitops-url
-                  value: '{{inputs.parameters.gitops-url}}'
-                - name: gitops-branch
-                  value: '{{inputs.parameters.gitops-branch}}'
-                - name: image-tag
-                  value: '{{steps.get-build-id.outputs.parameters.build-id}}'
-        - - name: argo-sync
-            template: sync-argo-app
-            arguments:
-              parameters:
-                - name: argocd-app-name
-                  value: '{{inputs.parameters.argocd-app-name}}'
-                - name: argocd-url
-                  value: '{{inputs.parameters.argocd-url}}'
     - name: build-id
       inputs:
         parameters:
@@ -416,7 +356,6 @@ spec:
           - name: build-id
             valueFrom:
               path: /workspace/result
-      metadata: {}
       script:
         name: ''
         image: bash:5.0.18
@@ -433,20 +372,23 @@ spec:
           id=`echo $RANDOM | md5sum | head -c 6`
           buildId={{inputs.parameters.stage}}-${ts}-${id}
           echo ${buildId} | tr -d "\n" | tee /workspace/result
+  serviceAccountName: argo-pipeline-runner
+---
+metadata:
+  name: git-clone
+  namespace: argo-events
+spec:
+  templates:
     - name: git-clone
       inputs:
         parameters:
           - name: git-url
           - name: revision
-      outputs: {}
-      metadata: {}
       script:
-        name: ''
         image: alpine/git:v2.26.2
         command:
           - sh
         workingDir: /workspace
-        resources: {}
         volumeMounts:
           - name: workdir
             mountPath: /workspace
@@ -458,15 +400,19 @@ spec:
           git remote add origin "{{inputs.parameters.git-url}}"
           git fetch --depth 1 origin "{{inputs.parameters.revision}}"
           git checkout "{{inputs.parameters.revision}}"
+  serviceAccountName: argo-pipeline-runner
+---
+metadata:
+  name: build-mvn
+  namespace: argo-events
+spec:
+  templates:
     - name: build-mvn
       inputs:
         parameters:
           - name: image-url
           - name: image-tag
-      outputs: {}
-      metadata: {}
       container:
-        name: ''
         image: maven:3-jdk-11
         command:
           - mvn
@@ -480,22 +426,25 @@ spec:
           - compile
           - com.google.cloud.tools:jib-maven-plugin:build
         workingDir: /workspace
-        resources: {}
         volumeMounts:
           - name: workdir
             mountPath: /workspace
           - name: m2-cache
             mountPath: /workspace/.m2
+  serviceAccountName: argo-pipeline-runner
+---
+metadata:
+  name: update-manifest
+  namespace: argo-events
+spec:
+  templates:
     - name: update-manifest
       inputs:
         parameters:
           - name: gitops-url
           - name: gitops-branch
           - name: image-tag
-      outputs: {}
-      metadata: {}
       script:
-        name: ''
         image: alpine/git:v2.26.2
         command:
           - sh
@@ -507,8 +456,7 @@ spec:
                 name: gitops-secret
                 key: gitops-repo-secret
         resources: {}
-        source: |
-
+        source: >
           mkdir deploy && cd deploy
           git init  
           echo $GITOPS_REPO_CREDENTIALS >  ~/.git-credentials
@@ -516,26 +464,33 @@ spec:
           git config credential.helper store
           git remote add origin {{inputs.parameters.gitops-url}}  
           git remote -v 
-          git -c http.sslVerify=false fetch --depth 1 origin {{inputs.parameters.gitops-branch}}  
+          git -c http.sslVerify=false fetch --depth 1 origin
+          {{inputs.parameters.gitops-branch}}  
           git checkout {{inputs.parameters.gitops-branch}}  
-          ls -al 
           echo "updating image to {{inputs.parameters.image-tag}}" 
-          sed -i "s|newTag:.*$|newTag: {{inputs.parameters.image-tag}}|" dev/kustomization.yaml 
+          sed -i "s|newTag:.*$|newTag: {{inputs.parameters.image-tag}}|"
+          dev/kustomization.yaml 
           cat dev/kustomization.yaml | grep newTag 
           git config --global user.email "argo@devops" 
           git config --global user.name "Argo Workflow Pipelines"
           git add . 
-          git commit --allow-empty -m "[argo] updating image to {{inputs.parameters.image-tag}}" 
-          git -c http.sslVerify=false push origin {{inputs.parameters.gitops-branch}}
+          git commit --allow-empty -m "[argo] updating image to
+          {{inputs.parameters.image-tag}}" 
+          git -c http.sslVerify=false push origin
+          {{inputs.parameters.gitops-branch}}
+  serviceAccountName: argo-pipeline-runner
+---
+metadata:
+  name: sync-argo-app
+  namespace: argo-events
+spec:
+  templates:
     - name: sync-argo-app
       inputs:
         parameters:
           - name: argocd-app-name
           - name: argocd-url
-      outputs: {}
-      metadata: {}
       script:
-        name: ''
         image: quay.io/argoproj/argocd:v2.7.2
         command:
           - sh
@@ -550,7 +505,6 @@ spec:
               secretKeyRef:
                 name: argocd-credentials-secret
                 key: argocd-user-password
-        resources: {}
         source: >
           argocd login {{inputs.parameters.argocd-url}} --username $ARGO_USER_ID
           --password $ARGO_USER_PASSWORD --insecure
@@ -559,8 +513,92 @@ spec:
 
           argocd app wait {{inputs.parameters.argocd-app-name}} --sync --health
           --operation --insecure
+  serviceAccountName: argo-pipeline-runner
+---
+metadata:
+  name: mvn-build-webhook-simple
+  generateName: mvn-build-webhook-
+  namespace: argo-events
+spec:
+  templates:
+    - name: mvn-build
+      inputs:
+        parameters:
+          - name: git-url
+            value: http://gitea.gitea:3000/argo/kw-mvn.git
+          - name: revision
+            value: main
+          - name: image-url
+            value: 10.214.156.107:30005/kw-mvn
+          - name: stage
+            value: dev
+          - name: gitops-url
+            value: http://gitea.gitea:3000/argo/kw-mvn-deploy.git
+          - name: gitops-branch
+            value: kust
+          - name: argocd-app-name
+            value: kw-mvn
+          - name: argocd-url
+            value: argocd-server.argocd
+      outputs: {}
+      metadata: {}
+      steps:
+        - - name: get-build-id
+            arguments:
+              parameters:
+                - name: stage
+                  value: '{{inputs.parameters.stage}}'
+            templateRef:
+              name: build-id
+              template: build-id
+        - - name: clone-sources
+            arguments:
+              parameters:
+                - name: git-url
+                  value: '{{inputs.parameters.git-url}}'
+                - name: revision
+                  value: '{{inputs.parameters.revision}}'
+            templateRef:
+              name: git-clone
+              template: git-clone
+        - - name: build-push
+            arguments:
+              parameters:
+                - name: image-url
+                  value: '{{inputs.parameters.image-url}}'
+                - name: image-tag
+                  value: '{{steps.get-build-id.outputs.parameters.build-id}}'
+            templateRef:
+              name: build-mvn
+              template: build-mvn
+        - - name: argo-update
+            arguments:
+              parameters:
+                - name: gitops-url
+                  value: '{{inputs.parameters.gitops-url}}'
+                - name: gitops-branch
+                  value: '{{inputs.parameters.gitops-branch}}'
+                - name: image-tag
+                  value: '{{steps.get-build-id.outputs.parameters.build-id}}'
+            templateRef:
+              name: update-manifest
+              template: update-manifest
+        - - name: argo-sync
+            arguments:
+              parameters:
+                - name: argocd-app-name
+                  value: '{{inputs.parameters.argocd-app-name}}'
+                - name: argocd-url
+                  value: '{{inputs.parameters.argocd-url}}'
+            templateRef:
+              name: sync-argo-app
+              template: sync-argo-app
   entrypoint: mvn-build
-  arguments: {}
+  arguments:
+    parameters:
+      - name: repository-name
+        value: kw-mvn
+  serviceAccountName: argo-pipeline-runner
   volumes:
     - name: workdir
       persistentVolumeClaim:
@@ -568,9 +606,9 @@ spec:
     - name: m2-cache
       persistentVolumeClaim:
         claimName: pvc-argo-build-cache
-
-```
 ---
+```
+- Workflow Template을 Submit 하여 빌드 프로세스를 구동합니다.
 
 **6) Argo Events 설치**
 
@@ -580,75 +618,13 @@ $ kubectl create namespace argo-events
 $ kubectl apply -f https://raw.githubusercontent.com/argoproj/argo-events/stable/manifests/install.yaml
 # event bus 설치
 $ kubectl apply -n argo-events -f https://raw.githubusercontent.com/argoproj/argo-events/stable/examples/eventbus/native.yaml
-
-
-# 소스 레파지토리에서 main 브랜치 푸쉬시 웹훅을 통해 파이프라인이 기동되도록 설정합니다.
-$ cat << EOF >> gitea-event-source.yml
----
-apiVersion: argoproj.io/v1alpha1
-kind: EventSource
-metadata:
-  name: gitea-event-source
-spec:
-  type: "webhook"
-  service:
-    ports:
-      - port: 12000
-        targetPort: 12000
-  webhook:
-    # EventSource can run multiple HTTP servers. Simply define a unique port to start a new HTTP server
-    example:
-      # port to run HTTP server on
-      port: "12000"
-      # endpoint to listen to
-      endpoint: "/push"
-      # HTTP request method to allow. In this case, only POST requests are accepted
-      method: "POST"
-      filter:
-        expression: "(body.ref == 'refs/heads/main')"
----
-apiVersion: argoproj.io/v1alpha1
-kind: Sensor
-metadata:
-  name: gitea-push
-spec:
-  template:
-    serviceAccountName: argo-pipeline-runner
-  dependencies:
-    - name: build-dep
-      eventSourceName: gitea-event-source
-      eventName: gitea-push
-  triggers:
-    - template:
-        name: gitea-push
-        argoWorkflow:
-          group: argoproj.io
-          version: v1alpha1
-          resource: Workflow
-          operation: submit
-          metadata:
-            generateName: build-trigger-
-          source:
-            resource:
-              apiVersion: argoproj.io/v1alpha1
-              kind: Workflow
-              metadata:
-                name: build-trigger
-              spec:
-                workflowTemplateRef:
-                  name: mvn-build-webhook
-EOF
 ```
-- https://gitea.kw01/argo/kw-mvn/settings/hooks
-- Add Webhook > Gitea 
-- Target URL 설정 : http://gitea-event-source-eventsource-svc.argo-events:12000/push
-- Test Delivery 클릭하여 확인
-
 ---
 
 **7) Trigger 설정**
 ```bash
 ---
+$ cat << EOF >> argo-rbac.yml
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -700,6 +676,84 @@ subjects:
   - kind: ServiceAccount
     name: argo-pipeline-runner
     namespace: argo-events
+EOF
+
+$ kubectl apply -f argo-rbac.yml
+
 ---
+# 소스 레파지토리에서 main 브랜치 푸쉬시 웹훅을 통해 파이프라인이 기동되도록 설정합니다.
+$ cat << EOF >> gitea-trigger.yml
+---
+apiVersion: argoproj.io/v1alpha1
+kind: EventSource
+metadata:
+  name: gitea-event-source
+spec:
+  type: "webhook"
+  service:
+    ports:
+      - port: 12000
+        targetPort: 12000
+  webhook:
+    # EventSource can run multiple HTTP servers. Simply define a unique port to start a new HTTP server
+    example:
+      # port to run HTTP server on
+      port: "12000"
+      # endpoint to listen to
+      endpoint: "/push"
+      # HTTP request method to allow. In this case, only POST requests are accepted
+      method: "POST"
+      filter:
+        expression: "(body.ref == 'refs/heads/main')"
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: gitea-push
+spec:
+  dependencies:
+    - name: build-dep
+      eventSourceName: gitea-event-source
+      eventName: gitea-push
+  triggers:
+    - template:
+        name: gitea-push
+        argoWorkflow:
+          source:
+            resource:
+              apiVersion: argoproj.io/v1alpha1
+              kind: Workflow
+              metadata:
+                generateName: build-trigger-
+              spec:
+                arguments:
+                  parameters:
+                    - name: git-url
+                      value: http://gitea.gitea:3000/argo/
+                    - name: revision
+                      value: main
+                workflowTemplateRef:
+                  name: mvn-build-webhook-simple
+          operation: submit
+          parameters:
+            - src:
+                dependencyName: build-dep
+                dataKey: body.repository.name
+              dest: spec.arguments.parameters.0.value
+              operation: append
+  template:
+    serviceAccountName: argo-pipeline-runner
+EOF
+
+$ kubectl apply -f gitea-trigger.yml
 ```
+---
+
+- Gitea의 소스 레파지토리에 웹훅을 등록합니다.
+- https://gitea.kw01/argo/kw-mvn/settings/hooks
+- Add Webhook > Gitea 
+- Target URL 설정 : http://gitea-event-source-eventsource-svc.argo-events:12000/push
+- Test Delivery 클릭하여 웹훅 동작을 확인합니다.
+- gitea.kw01/argo/kw-mvn의 main 브랜치를 Push하여 파이프라인 기동을 확인합니다.
+
 
