@@ -340,8 +340,12 @@ $ kubectl apply -f pvc-argo.yml
 
 **6) WorkflowTemplate 등록**
 
+- Argo workflow 는 NodePort 서비스를 통해 접속합니다.
+- http://노드IP:30274
+
 ```bash
 # WorkflowTemplate Revised
+# Argo Workflow UI에 접속하여 Workflow Template 생성 메뉴에서 아래 template를 하나씩 생성합니다.
 ---
 metadata:
   name: build-id
