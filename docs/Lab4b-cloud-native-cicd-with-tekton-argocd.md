@@ -1,4 +1,4 @@
-### Lab 6. Cloud Native CI/CD with tekton and argocd
+### Lab 4b. Cloud Native CI/CD with tekton and argocd
 
 > Tekton uses kubernetes CRDs - using kubernetes resources - to run CICD pipelines
 > 
