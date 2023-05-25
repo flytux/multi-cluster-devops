@@ -35,7 +35,13 @@ $ systemctl enable rke2-server --now
 $ systemctl status -l rke2-server
 $ journalctl -fa
 
-$ su - k8sadm # 사용자 계정
+
+# k8sadm 그룹과 계정을 생성하고 kubectl 실행 환경을 설정합니다.
+$ sudo groupadd -g 2000 k8sadm
+$ sudo useradd -g 2000 -u 2000 k8sadm
+$ sudo passwd k8sadm
+$ su - k8sadm
+
 $ mkdir ~/.kube
 $ sudo cp /etc/rancher/rke2/rke2.yaml ~/.kube/config
 $ sudo chown k8sadm ~/.kube/config
@@ -64,6 +70,12 @@ alias kge="kubectl get events  --sort-by='.metadata.creationTimestamp'  -o 'go-t
 EOF
 
 $ source ~/.bashrc
+
+# 생성된 클러스터 정보를 조회합니다.
+$ k get nodes -o wide
+$ k get pods -A
+$ k cluster-info
+$ k get svc -A
 ```
 
 ---
