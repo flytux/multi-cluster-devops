@@ -1,9 +1,9 @@
 ### Lab 4. Argo workflow CI/CD  
 
 - Argo Workflow와 ArgoCD를 이용하여 Cloud Native CI/CD 환경을 구성합니다.
-- Gitea - Argo Workflow - Docker Registry - ArgoCD - 배포 대상 클러스터 순서로 빌드 프로세스는 진행됩니다.
+- Git clone -> maven build -> image push -> argo-deploy 순서로 빌드 프로세스는 진행됩니다.
 - Gitea 의 Event를 통해서 파이프라인 구동을 자동화 합니다.
-
+![CI/CD 파이프라인](./cicd-pipelines.png)
 ---
 
 **1) Docker Registry 설치**
