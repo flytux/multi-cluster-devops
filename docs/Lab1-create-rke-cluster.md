@@ -37,9 +37,10 @@ $ systemctl status -l rke2-server
 $ journalctl -fa
 
 # k8adm 계정을 생성합니다.
-$ sudo groupadd -g 2000 k8sadm
-$ sudo useradd -g 2000 -u 2000 k8sadm
-$ sudo passwd k8sadm
+$ groupadd -g 2000 k8sadm
+$ useradd -m -u 2000 -g 2000 -s /bin/bash k8sadm
+$ echo -e "1\n1" | passwd k8sadm >/dev/null 2>&1
+$ echo ' k8sadm ALL=(ALL)   ALL' >> /etc/sudoers
 
 $ su - k8sadm # 사용자 계정으로 kubectl 실행환경을 설정합니다.
 $ mkdir ~/.kube
