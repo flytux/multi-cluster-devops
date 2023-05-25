@@ -64,6 +64,8 @@ alias kge="kubectl get events  --sort-by='.metadata.creationTimestamp'  -o 'go-t
 EOF
 
 $ source ~/.bashrc
+
+$ k get nodes -o wide
 ```
 
 ---
