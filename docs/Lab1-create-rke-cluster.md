@@ -2,7 +2,7 @@
 
 - rke2 설치하고 워커노드를 추가합니다.
 - rke2 는 설치 스크립트를 이용하여 쉽게 설치할 수 있습니다.
-- rancher에서 지원하는 클러스터 버전에 차이가 있어 v1.26 이하를 지정하여 설치합니다.  
+- rancher에서 지원하는 클러스터 버전을 확인하고 해당 원하는 버전을 설치합니다. 
   (https://github.com/rancher/rancher/releases/tag/v2.7.3)
 
 ---
@@ -17,12 +17,13 @@
 
 # vm에 로그인 후
 $ sudo -i
-$ curl -sfL https://get.rke2.io | sh -
 
-# (Optional)
 # 클러스터 버전 지정 시 INSTALL_RKE2_VERSION 지정
-# Rancher 2.7.3 버전은 RKE2 1.26 이하 지원
+# Rancher 2.7.3 버전은 RKE2 1.26 이하 버전 설치
 $ curl -sfL https://get.rke2.io | INSTALL_RKE2_VERSION=v1.25.9+rke2r1 sh -
+
+# (Optional) 최신버전 설치 시
+$ curl -sfL https://get.rke2.io | sh -
 ```
 
 - systemctl 로 rke2-server 서비스를 기동합니다.
