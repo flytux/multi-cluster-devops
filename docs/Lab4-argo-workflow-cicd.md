@@ -301,6 +301,7 @@ $ argo version
 - Gitea와 ArgoCD 인증정보는 argo 네임스페이스에 secret으로 설정하여 적용합니다.
 
 ```bash
+# 이전에 등록한 gitea 계정 / 패스워드 정보와 Argocd 패스워드 정보를 Secret으로 생성합니다.
 $ kubectl create secret generic -n argo gitops-secret --from-literal=gitops-repo-secret='http://argo:12345678@gitea.gitea:3000'
 $ kubectl create secret generic -n argo argocd-credentials-secret --from-literal=argocd-user-password='7NKSA3w19yQ4XGAL' --from-literal=argocd-user-id='admin'
 
