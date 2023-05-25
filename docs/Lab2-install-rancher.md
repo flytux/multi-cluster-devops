@@ -4,6 +4,8 @@
 - Rancher는 kubernetes 클러스터 관리를 위해 tls 통신을 기본으로 하여 cert-manager를 통한 인증서 관리가 필요합니다.
 - 랜처가 설치된 클러스터는 관리 클러스터 역할을 하고, 다른 서비스 클러스터를 연결하여 멀티 클러스터 환경을 관리합니다. 
 
+![Rancher Config](./rancher-config.png)
+
 ---
 
 **1. Install Rancher**
