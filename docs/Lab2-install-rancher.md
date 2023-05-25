@@ -25,7 +25,7 @@ $ helm upgrade -i rancher rancher-latest/rancher \
 --set replicas=1 --set global.cattle.psp.enabled=false \
 --create-namespace -n cattle-system
 
-# Ranubectlcher 구동 확인
+# Rancher 구동 확인
 $ kubectl get pods -l app=rancher -A
 $ kubectl rollout status deploy rancher -n cattle-system
 
