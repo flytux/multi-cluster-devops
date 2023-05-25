@@ -33,7 +33,7 @@ $ kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storag
 - Cluster > local > Worksloads > Create
 - Deployment > Namespace > Create a New Namespace : nginx 입력합니다.
 - Name : nginx > Container Image : nginx 를 입력합니다.
-- Networking > ClusterIP > Name : http > Private Container Port : 80 > Create 를 선택합니다.
+- Ports > ClusterIP > Name : http > Private Container Port : 80 > Create 를 선택합니다.
 
 
 - Cluster > Services > nginx > http 클릭합니다. 
