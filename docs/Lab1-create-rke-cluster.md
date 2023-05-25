@@ -43,7 +43,7 @@ $ systemctl enable rke2-server --now
 $ systemctl status -l rke2-server
 $ journalctl -fa
 
-# k8adm 계정을 생성합니다.
+# k8sadm 계정을 생성합니다.
 $ groupadd -g 2000 k8sadm
 $ useradd -m -u 2000 -g 2000 -s /bin/bash k8sadm
 $ echo -e "1\n1" | passwd k8sadm >/dev/null 2>&1
