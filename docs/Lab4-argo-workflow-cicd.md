@@ -165,8 +165,12 @@ spec:
         pathType: Prefix
 EOF
 ```
+
+> host 파일에 gitea.kw01 argocd.kw01을 추가합니다.  
+> rancher와 동일한 형태로 추가하면 됩니다.  
+> 10.214.156.101 rancher.kw01 argocd.kw01 argo.kw01 gitea.kw01  
+
 - http://gitea.kw01 에 접속합니다.
-- 접속이 안되면 hosts 파일에 gitea.kw01이 추가되어 있는지 확인합니다.
 - server domain과 접속 URL을 http://gitea.kw01 로 설정하고 저장합니다.
 - http://gitea.kw01에 접속하여 신규 계정을 생성합니다.
 - 사용자 ID : argo / 패스워드 : 12345678
@@ -189,7 +193,7 @@ $ kubectl edit ds -n kube-system rke2-ingress-nginx-controller
 # 52  줄에 아래 내용 추가
     - --watch-ingress-without-class=true
     - --enable-ssl-passthrough
-# 저장
+# 저장 :wq!
 
 # Ingress 설정
 $ kubectl -n argocd apply -f - <<"EOF"  
