@@ -7,14 +7,22 @@ spec:
   pipelineRef:
     name: build-mvn-jib
   params:
-  - name: revision
+  - name: build-stage
+    value: dev
+  - name: git-repo-name
+    value: kw-mvn
+  - name: git-branch
     value: main
   - name: insecure-registry
     value: "true"
   - name: git-url
-    value: http://gitea.gitea:3000/argo/kw-mvn.git
+    value: "http://gitea.gitea:3000/argo"
   - name: image-url
-    value: "10.214.156.101:30005/kw-mvn"
+    value: "10.214.156.101:30005"
+  - name: gitops-repo-name
+    value: kw-mvn-deploy
+  - name: gitops-branch
+    value: kust
   workspaces:
   - name: source
     persistentvolumeclaim:

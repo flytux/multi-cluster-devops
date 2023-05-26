@@ -40,6 +40,9 @@ spec:
     script: |
       #!/usr/bin/env sh
       git init
+      echo "---------------------"
+      echo $(params.gitops-url)
+      echo "---------------------"
       git remote add origin $(params.gitops-url)
       git fetch --depth 1 origin $(params.gitops-revision)
       git checkout $(params.gitops-revision)
@@ -49,7 +52,7 @@ spec:
     script: |
       #!/usr/bin/env sh
       set -e
-      echo "updating image to $(inputs.params.image-url):$(inputs.params.build-id)"
+      echo "updating image to $(inputs.params.image-url)/$(inputs.params.argo-app-name):$(inputs.params.build-id)"
       ls -al dev
       sed -i "s|newTag:.*$|newTag: $(params.build-id)|" $(params.deploy-manifest)
   - name: commit-push-changes-gitops

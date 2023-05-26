@@ -24,11 +24,11 @@ metadata:
   name: build-binding
 spec:
   params:
-    - name: gitrevision
+    - name: git-revision
       value: $(body.after)
-    - name: gitrepositoryurl
+    - name: git-repository-url
       value: $(body.repository.clone_url)
-    - name: image-name
+    - name: git-repo-name
       value: $(body.repository.name)
 ---
 apiVersion: triggers.tekton.dev/v1alpha1
@@ -37,12 +37,11 @@ metadata:
   name: build-template
 spec:
   params:
-    - name: gitrevision
+    - name: git-revision
       description: The git revision
-      default: main
-    - name: gitrepositoryurl
+    - name: git-repository-url
       description: The git repository url
-    - name: image-name
+    - name: git-repo-name
   resourcetemplates:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
@@ -53,14 +52,22 @@ spec:
         pipelineRef:
           name: build-mvn-jib
         params:
-          - name: image-url
-            value: 10.214.156.101:30005/$(tt.params.image-name)
-          - name: revision
-            value: $(tt.params.gitrevision)
-          - name: git-url
-            value: $(tt.params.gitrepositoryurl)
+          - name: build-stage
+            value: dev
+          - name: git-repo-name
+            value: $(tt.params.git-repo-name)
+          - name: git-branch
+            value: $(tt.params.git-revision)
           - name: insecure-registry
             value: "true"
+          - name: git-url
+            value: "http://gitea.gitea:3000/argo"
+          - name: image-url
+            value: "10.214.156.101:30005"
+          - name: gitops-repo-name
+            value: $(tt.params.git-repo-name)-deploy
+          - name: gitops-branch
+            value: "kust"
         workspaces:
         - name: source
           persistentvolumeclaim:

@@ -4,12 +4,16 @@ metadata:
   name: build-mvn-jib
 spec:
   params:
-    - name: git-url 
-    - name: revision
+    - name: git-repo-name 
+      default: kw-mvn
+    - name: git-branch
       default: main
-    - name: image-url 
     - name: insecure-registry
       default: "false"
+    - name: git-url
+    - name: image-url 
+    - name: gitops-repo-name
+    - name: gitops-branch
     - name: build-stage
       default: "dev"
   workspaces:
@@ -27,9 +31,9 @@ spec:
         name: git-clone
       params:
         - name: url
-          value: $(params.git-url)
+          value: $(params.git-url)/$(params.git-repo-name)
         - name: revision
-          value: $(params.revision)
+          value: $(params.git-branch)
       workspaces:
         - name: output
           workspace: source
@@ -40,7 +44,7 @@ spec:
         - clone-sources
       params:
         - name: IMAGE
-          value: $(params.image-url):$(tasks.generate-id.results.build-id)
+          value: $(params.image-url)/$(params.git-repo-name):$(tasks.generate-id.results.build-id)
         - name: INSECUREREGISTRY
           value: $(params.insecure-registry)
       workspaces:
@@ -53,9 +57,9 @@ spec:
         - build-image
       params:
         - name: argo-app-name
-          value: "kw-mvn"
+          value: $(params.git-repo-name)
         - name: gitops-url
-          value: "http://gitea.gitea:3000/argo/kw-mvn-deploy.git"
+          value: $(params.git-url)/$(params.gitops-repo-name) 
         - name: image-url
           value: $(params.image-url)
         - name: build-id
