@@ -3,6 +3,8 @@
 - Argo Workflow와 ArgoCD를 이용하여 Cloud Native CI/CD 환경을 구성합니다.
 - Git clone -> maven build -> image push -> argo-deploy 순서로 빌드 프로세스는 진행됩니다.
 - Gitea 의 Event를 통해서 파이프라인 구동을 자동화 합니다.
+
+---
 ![CI/CD 파이프라인](./cicd-pipelines.png)
 ---
 
@@ -774,5 +776,8 @@ $ kubectl apply -f gitea-trigger.yml
 - Target URL 설정 : http://gitea-event-source-eventsource-svc.argo-events:12000/push
 - Test Delivery 클릭하여 웹훅 동작을 확인합니다.
 - gitea.kw01/argo/kw-mvn의 main 브랜치를 Push하여 파이프라인 기동을 확인합니다.
+
+---
+
 
 
