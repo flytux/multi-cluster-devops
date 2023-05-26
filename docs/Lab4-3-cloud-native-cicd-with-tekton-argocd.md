@@ -30,6 +30,7 @@ spec:
             path: /
             pathType: Prefix
 EOF
+
 $ k apply -f tekton-ing.yml
 ~~~
 
