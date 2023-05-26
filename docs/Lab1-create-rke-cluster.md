@@ -50,6 +50,7 @@ $ echo -e "1\n1" | passwd k8sadm >/dev/null 2>&1
 $ echo ' k8sadm ALL=(ALL)   ALL' >> /etc/sudoers
 
 $ su - k8sadm # 사용자 계정으로 kubectl 실행환경을 설정합니다.
+$ su - k8sadm
 $ mkdir ~/.kube
 $ sudo cp /etc/rancher/rke2/rke2.yaml ~/.kube/config
 $ sudo chown k8sadm ~/.kube/config
