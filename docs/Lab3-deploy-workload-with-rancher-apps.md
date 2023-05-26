@@ -12,11 +12,16 @@
 
 
 ```bash
-# loca-path storage 설치
+# local-path storage 설치
 $ kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/v0.0.24/deploy/local-path-storage.yaml
 $ kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+
+# rhel selinux를 사용하는 경우 local-path-storage 사용에 제약이 있어 disbled 합니다.
+$ sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+$ reboot
 ```
 
+- Rancher에 로그인 한 후
 - Cluster > Apps > Charts > Filter tomcat 선택합니다.
 - Apache Tomcat > Install > Namespace > tomcat 입력 > Next 를 선택합니다.
 - 128줄/170줄 변경 : persistence.enabled > false, service.type > ClusterIP
