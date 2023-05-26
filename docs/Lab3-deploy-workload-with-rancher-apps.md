@@ -19,7 +19,14 @@ $ kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storag
 
 - Cluster > Apps > Charts > Filter tomcat 선택합니다.
 - Apache Tomcat > Install > Namespace > tomcat 입력 > Next 를 선택합니다.
-- service: type: LoadBalancer 값을 type: ClusterIP로 변경 > Install 을 선택합니다.
+- 128줄/170줄 변경 : persistence.enabled > false, service.type > ClusterIP
+```bash
+- persistence:
+    enabled: false
+- service: 
+    type: ClusterIP
+```
+- Install 을 선택합니다.
 
 - Cluster > Services > tomcat > http 클릭합니다.
 > Rancher에서 제공하는 Proxy를 이용하여 클러스터 내 서비스에 접속할 수 있습니다.  
