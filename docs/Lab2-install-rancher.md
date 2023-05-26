@@ -45,19 +45,27 @@ EOF
 **2. Install Service Cluster**
 
 - RKE2를 이용하여 새로운 1 node 클러스터를 생성합니다.
+- VM3에 로그인하여 root 계정으로 작업합니다.
 
 ```bash
 
 # 클러스터를 설치할 VM 로그인
 # RKE2 설치
+$ sudo -i
 $ curl -sfL https://get.rke2.io | INSTALL_RKE2_VERSION=v1.24.13+rke2r1 sh -
 
 # 클러스터 구동 확인
-$ systemctl enable rke2-server --now
+$ systemctl enable rke2-server --now &
 $ systemctl status -l rke2-server
 $ journalctl -fa
 
 # 클러스터 접속 설정
+
+$ groupadd -g 2000 k8sadm
+$ useradd -m -u 2000 -g 2000 -s /bin/bash k8sadm
+$ echo -e "1\n1" | passwd k8sadm >/dev/null 2>&1
+$ echo ' k8sadm ALL=(ALL)   ALL' >> /etc/sudoers
+
 $ su - k8sadm # 사용자 계정
 $ mkdir ~/.kube
 $ sudo cp /etc/rancher/rke2/rke2.yaml ~/.kube/config
@@ -67,6 +75,7 @@ $ sed -i 's/default/rke2-svc/g'  ~/.kube/config
 # kubectl cli 설치
 $ curl -LO https://dl.k8s.io/release/v1.25.9/bin/linux/amd64/kubectl
 $ chmod +x kubectl && sudo mv kubectl /usr/local/bin
+
 ```
 
 ---
@@ -75,7 +84,7 @@ $ chmod +x kubectl && sudo mv kubectl /usr/local/bin
 
 - Rancher에 로그인 후 Cluster Import 기능으로 연결합니다.
 - Rancher Login > Import Existing > Import Any Kubernetes Cluster - Generic 을 선택합니다.
-- Cluster Name : rke2-svc > Create 를 실행합니다.
+- Cluster Name : svc > Create 를 실행합니다.
 - Registration 화면의 2번째 명령어를 복사하여 생성된 클러스터에서 실행합니다.  
   *ex) "curl --insecure -sfL https://rancher.kw01/v3/import/vdhpnh5twscr54nbjsjjp7vhjltks6mjr9ppmx25rs4z7blrtzfz4t_c-m-wdghhcjm.yaml | kubectl apply -f -"*
 
@@ -103,6 +112,6 @@ spec:
         - rancher.kw01
 EOF
 
-$ kubectl patch deployment cattle-cluster-agent --patch-file agent-patch.yml
+$ kubectl patch deployment cattle-cluster-agent --patch-file agent-patch.yml -n cattle-system
 ```
 
