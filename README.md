@@ -7,7 +7,7 @@
 ### Lab 4. Cloud Native CI/CD
 > #### Lab 4-2 [Cloud Native CI/CD Toolchain](./docs/Lab4-1-cloud-native-ci-cd-toolchain.md)
 > #### Lab 4-2 [Argo Workflow and Events](./docs/Lab4-2-argo-workflow-events.md)
-> #### Lab 4-3 [Tekton and ArgoCD](./docs/Lab4b-cloud-native-cicd-with-tekton-argocd.md)
+> #### Lab 4-3 [Tekton and ArgoCD](./docs/Lab4-3-cloud-native-cicd-with-tekton-argocd.md)
 ### Lab 5. [Service Mesh with Istio / Kiali](./docs/Lab5-service-mesh-with-istio.md)
 ### Lab 6. [Cloud Workload Logging / Backups](./docs/Lab6-cloud-workload-logging-backups.md)
 ---
