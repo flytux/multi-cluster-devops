@@ -50,7 +50,7 @@ EOF
 
 # 클러스터를 설치할 VM 로그인
 # RKE2 설치
-$ curl -sfL https://get.rke2.io | INSTALL_RKE2_VERSION=v1.25.9+rke2r1 sh -
+$ curl -sfL https://get.rke2.io | INSTALL_RKE2_VERSION=v1.24.13+rke2r1 sh -
 
 # 클러스터 구동 확인
 $ systemctl enable rke2-server --now
