@@ -9,3 +9,4 @@
 ### Lab 6. [Cloud Workload Logging / Backups](./docs/Lab6-cloud-workload-logging-backups.md)
 ---
 ### Lab 4b. [Tekton CI/CD Pipelines with ArgoCD](./docs/Lab4b-cloud-native-cicd-with-tekton-argocd.md)
+### A1. [Spring Monitoring with Prometheus Service Monitor and Grafana](./docs/A1-spring-monitoring-with-prometheus-grafana.md)
