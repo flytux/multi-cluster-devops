@@ -35,11 +35,11 @@ $ curl -v localhost:30005/v2/_catalog
 
 # nerdctl download
 $ wget https://github.com/containerd/nerdctl/releases/download/v1.3.1/nerdctl-full-1.3.1-linux-amd64.tar.gz
-$ tar Cxzvvf /usr/local nerdctl-full-1.3.1-linux-amd64.tar.gz
+$ sudo tar Cxzvvf /usr/local nerdctl-full-1.3.1-linux-amd64.tar.gz
 
 # nerdctl 설정
 $ sudo mkdir -p /etc/nerdctl
-$ cat << EOF >> /etc/nerdctl/nerdctl.toml
+$ cat << EOF | sudo tee /etc/nerdctl/nerdctl.toml
 debug          = false
 debug_full     = false
 address        = "unix:///run/k3s/containerd/containerd.sock"
@@ -49,16 +49,16 @@ hosts_dir      = ["/etc/containerd/certs.d", "/etc/docker/certs.d"]
 EOF
 
 # admin / 1 로 로그인
-$ nerdctl --insecure-registry login 10.214.156.72:30005
+$ sudo nerdctl --insecure-registry login 10.214.156.72:30005
 
 # 컨테이너 런타임에 Private Registry 인증 / insecure 설정
 $ cat << EOF | sudo tee /etc/rancher/rke2/registries.yaml
 mirrors:
-  10.214.156.72:30005:
+  10.214.156.101:30005:
     endpoint:
       - http://10.214.156.72:30005
 configs:
-  10.214.156.72:30005:
+  10.214.156.101:30005:
     auth:
       username: admin 
       password: 1 
@@ -66,10 +66,10 @@ configs:
       insecure_skip_verify: true
 EOF
 
-$ systemctl restart rke2-server
+$ sudo systemctl restart rke2-server
 
 # 아래 파일에 insecure 및 인증 설정 추가 확인 
-$ cat /var/lib/rancher/rke2/agent/etc/containerd/config.toml
+$ sudo cat /var/lib/rancher/rke2/agent/etc/containerd/config.toml
 ```
 
 ---
@@ -166,6 +166,7 @@ spec:
 EOF
 ```
 - http://gitea.kw01 에 접속합니다.
+- 접속이 안되면 hosts 파일에 gitea.kw01이 추가되어 있는지 확인합니다.
 - server domain과 접속 URL을 http://gitea.kw01 로 설정하고 저장합니다.
 - http://gitea.kw01에 접속하여 신규 계정을 생성합니다.
 - 사용자 ID : argo / 패스워드 : 12345678
