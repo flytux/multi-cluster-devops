@@ -27,7 +27,7 @@ $ sudo -i
 
 # 클러스터 버전 지정 시 INSTALL_RKE2_VERSION 지정
 # Rancher 2.7.3 버전은 RKE2 1.26 이하 버전 설치
-$ curl -sfL https://get.rke2.io | INSTALL_RKE2_VERSION=v1.25.9+rke2r1 sh -
+$ curl -sfL https://get.rke2.io | INSTALL_RKE2_VERSION=v1.24.13+rke2r1 sh -
 
 # (Optional) 최신버전 설치 시
 $ curl -sfL https://get.rke2.io | sh -
@@ -54,7 +54,7 @@ $ su - k8sadm
 $ mkdir ~/.kube
 $ sudo cp /etc/rancher/rke2/rke2.yaml ~/.kube/config
 $ sudo chown k8sadm ~/.kube/config
-$ sed -i 's/default/rke2/g'  ~/.kube/config
+$ sed -i 's/default/rms/g'  ~/.kube/config
 ```
 
 - kubectl / helm cli을 설치합니다.
@@ -100,7 +100,7 @@ $ sudo cat /var/lib/rancher/rke2/server/token
 
 # Worker Node에 ssh 접속
 $ sudo -i
-$ export INSTALL_RKE2_VERSION=v1.25.9+rke2r1
+$ export INSTALL_RKE2_VERSION=v1.24.13+rke2r1
 $ curl -sfL https://get.rke2.io | INSTALL_RKE2_TYPE="agent" sh -
 $ mkdir -p /etc/rancher/rke2/
 $ cat <<EOF >> /etc/rancher/rke2/config.yaml
@@ -108,3 +108,6 @@ server: https://마스터노드 IP:9345
 token: 클러스터 토큰
 EOF
 $ systemctl enable rke2-agent.service --now
+```
+
+**3) 클러스터 인증서 갱신**
