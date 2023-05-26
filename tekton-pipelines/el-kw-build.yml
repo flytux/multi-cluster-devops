@@ -1,0 +1,69 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: build-listener
+spec:
+  serviceAccountName: sa-pipeline-trigger
+  triggers:
+    - name: build-trigger
+      interceptors:
+        - name: "CEL filter: only master brancher pushed"
+          ref:
+            name: "cel"
+          params:
+          - name: "filter"
+            value: "body.ref in ['refs/heads/main']"
+      bindings:
+        - ref: build-binding
+      template:
+        ref: build-template
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: build-binding
+spec:
+  params:
+    - name: gitrevision
+      value: $(body.after)
+    - name: gitrepositoryurl
+      value: $(body.repository.clone_url)
+    - name: image-name
+      value: $(body.repository.name)
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: build-template
+spec:
+  params:
+    - name: gitrevision
+      description: The git revision
+      default: main
+    - name: gitrepositoryurl
+      description: The git repository url
+    - name: image-name
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        generateName: build-trigger-run-
+      spec:
+        serviceAccountName: sa-pipeline-runner
+        pipelineRef:
+          name: build-mvn-jib
+        params:
+          - name: image-url
+            value: 10.214.156.101:30005/$(tt.params.image-name)
+          - name: revision
+            value: $(tt.params.gitrevision)
+          - name: git-url
+            value: $(tt.params.gitrepositoryurl)
+          - name: insecure-registry
+            value: "true"
+        workspaces:
+        - name: source
+          persistentvolumeclaim:
+            claimName: pvc-build
+        - name: gitops
+          emptyDir: {}

@@ -1,0 +1,65 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: build-mvn-jib
+spec:
+  params:
+    - name: git-url 
+    - name: revision
+      default: main
+    - name: image-url 
+    - name: insecure-registry
+      default: "false"
+    - name: build-stage
+      default: "dev"
+  workspaces:
+    - name: source 
+    - name: gitops 
+  tasks:
+    - name: generate-id
+      taskRef:
+        name: generate-build-id
+      params:
+        - name: base-version
+          value: $(params.build-stage)
+    - name: clone-sources
+      taskRef:
+        name: git-clone
+      params:
+        - name: url
+          value: $(params.git-url)
+        - name: revision
+          value: $(params.revision)
+      workspaces:
+        - name: output
+          workspace: source
+    - name: build-image
+      taskRef:
+        name: jib-maven
+      runAfter:
+        - clone-sources
+      params:
+        - name: IMAGE
+          value: $(params.image-url):$(tasks.generate-id.results.build-id)
+        - name: INSECUREREGISTRY
+          value: $(params.insecure-registry)
+      workspaces:
+        - name: source
+          workspace: source
+    - name: deploy
+      taskRef:
+        name: deploy
+      runAfter:
+        - build-image
+      params:
+        - name: argo-app-name
+          value: "kw-mvn"
+        - name: gitops-url
+          value: "http://gitea.gitea:3000/argo/kw-mvn-deploy.git"
+        - name: image-url
+          value: $(params.image-url)
+        - name: build-id
+          value: $(tasks.generate-id.results.build-id)
+      workspaces:
+        - name: gitops
+          workspace: gitops
