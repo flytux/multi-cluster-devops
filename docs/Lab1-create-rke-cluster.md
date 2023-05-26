@@ -109,5 +109,3 @@ token: 클러스터 토큰
 EOF
 $ systemctl enable rke2-agent.service --now
 ```
-
-**3) 클러스터 인증서 갱신**
