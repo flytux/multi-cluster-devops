@@ -1,6 +1,6 @@
 ### Lab 5. Istio를 이용한 서비스 메쉬 설정
 
-&nbsp;
+---
 
 **1) 랜처에서 Istio 서비스를 설치합니다.**
 - Cluster > local > Apps > Istio > Install
@@ -12,15 +12,15 @@
 - Cluster > local > Project/Namespace > Create Project "Observability" 
 - Project "Observability" > Create Namespace "istio-books"
 - Namespace "istio-books" > ... > Enable Istio Auto Injection
-- 우측상단 메뉴 > Import YAML > Copy [istio-books](../config/istio-books.yml)
+- 우측상단 메뉴 > Import YAML > Copy [istio-books](../istio/istio-books.yml)
 - 편집창에 붙여넣고 > Default Namespace > istio-books > Import
 
 ---
 
 **3) Gateway / Virtual Service를 설정합니다.**
-- 우측상단 메뉴 > Import YAML Import YAML > Copy [istio-book-gateway](../config/book-gateway.yml)
+- 우측상단 메뉴 > Import YAML Import YAML > Copy [istio-book-gateway](../istio/book-gateway.yml)
 - Default Namespace > istio-books > Import
-- 우측상단 메뉴 > Import YAML Import YAML > Copy [book-virtual-service](../config/book-virtual-service.yml)
+- 우측상단 메뉴 > Import YAML Import YAML > Copy [book-virtual-service](../istio/book-virtual-service.yml)
 - Default Namespace > istio-books > Import
 
 - 웹브라우저에서 배포한 서비스에 접속합니다. http://노드IP:31380/productpage
@@ -32,9 +32,9 @@
 ---
 
 **4) Destination Rule / Virtual Services로 유량 제어를 설정합니다.**
-- 우측상단 메뉴 > Import YAML > Copy [istio-book-destination-rule](../config/istio-book-destination-rule.yml)
+- 우측상단 메뉴 > Import YAML > Copy [istio-book-destination-rule](../istio/istio-book-destination-rule.yml)
 - Default Namespace > istio-books > Import
-- 우측상단 메뉴 > Import YAML > Copy [istio-book-virtual-services-traffic-control](../config/istio-book-virtual-service-traffic-control.yml)
+- 우측상단 메뉴 > Import YAML > Copy [istio-book-virtual-services-traffic-control](../istio/istio-book-virtual-service-traffic-control.yml)
 - Default Namespace > istio-books > Import
 
 - 웹브라우저에서 배포한 서비스에 접속합니다. http://노드IP:31380/productpage
