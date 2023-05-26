@@ -55,6 +55,12 @@ $ k create -f tekton-pipelines/pr-kw-build.yml
 $ tkn pr logs -f 
 ~~~
 
+---
+> To Many Open Files 오류 시   
+>> sysctl -w fs.inotify.max_user_watches=100000   
+>> sysctl -w fs.inotify.max_user_instances=100000   
+---
+
 - http://tekton.kw01/#/namespaces/build/pipelineruns
 
 - http://10.214.156.101:30099/ 
