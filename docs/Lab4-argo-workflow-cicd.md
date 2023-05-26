@@ -38,7 +38,7 @@ $ wget https://github.com/containerd/nerdctl/releases/download/v1.3.1/nerdctl-fu
 $ tar Cxzvvf /usr/local nerdctl-full-1.3.1-linux-amd64.tar.gz
 
 # nerdctl 설정
-$ mkdir -p /etc/nerdctl
+$ sudo mkdir -p /etc/nerdctl
 $ cat << EOF >> /etc/nerdctl/nerdctl.toml
 debug          = false
 debug_full     = false
