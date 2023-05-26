@@ -52,11 +52,12 @@ EOF
 $ sudo nerdctl --insecure-registry login 10.214.156.72:30005
 
 # 컨테이너 런타임에 Private Registry 인증 / insecure 설정
+# 레지스트리 주소를 자신의 주소로 변경합니다.
 $ cat << EOF | sudo tee /etc/rancher/rke2/registries.yaml
 mirrors:
   10.214.156.101:30005:
     endpoint:
-      - http://10.214.156.72:30005
+      - http://10.214.156.101:30005
 configs:
   10.214.156.101:30005:
     auth:
@@ -248,6 +249,24 @@ spec:
       - CreateNamespace=true
 EOF
 ```
+
+- 설치된 Argo App의 컨테이너이미지 주소를 설치한 Docker Registry 정보에 맞추어 변경합니다.
+- https://gitea.kw01/argo/kw-mvn-deploy/src/branch/kust/base/deploy.yml
+- 19번째 줄 아래와 같이 변경 후 Commit 합니다.
+
+```bash
+  # 설치된 자신의 Docker Registry 주소로 변경합니다.
+  image: 10.214.156.101:30005/kw-mvn:init
+  # 저장후 commit 합니다.
+```
+- https://gitea.kw01/argo/kw-mvn-deploy/src/branch/kust/dev/kustomization.yaml
+- 9번째 줄 아래와 같이 변경 후 Commit 합니다.
+
+```bash
+  # 위와 동일하게 Docker Registry 주소로 변경합니다.
+  - name: 10.214.156.101:30005/kw-mvn
+  # 저장후 commit 합니다.
+```  
 ---
 
 **4) Argo workflow 설치**
@@ -293,6 +312,7 @@ $ k patch -n argo svc argo-server --patch-file svc-patch.yml
 ```bash
 # 이전에 등록한 gitea 계정 / 패스워드 정보와 Argocd 패스워드 정보를 Secret으로 생성합니다.
 $ kubectl create secret generic -n argo gitops-secret --from-literal=gitops-repo-secret='http://argo:12345678@gitea.gitea:3000'
+# ArgoCD 패스워드는 앞에서 확인한 패스워드를 입력합니다.
 $ kubectl create secret generic -n argo argocd-credentials-secret --from-literal=argocd-user-password='7NKSA3w19yQ4XGAL' --from-literal=argocd-user-id='admin'
 
 # 파이프라인용 pvc 생성
@@ -339,7 +359,7 @@ $ kubectl apply -f pvc-argo.yml
 ---
 metadata:
   name: build-id
-  namespace: argo-events
+  namespace: argo
 spec:
   templates:
     - name: build-id
@@ -371,7 +391,7 @@ spec:
 ---
 metadata:
   name: git-clone
-  namespace: argo-events
+  namespace: argo
 spec:
   templates:
     - name: git-clone
@@ -400,7 +420,7 @@ spec:
 ---
 metadata:
   name: build-mvn
-  namespace: argo-events
+  namespace: argo
 spec:
   templates:
     - name: build-mvn
@@ -431,7 +451,7 @@ spec:
 ---
 metadata:
   name: update-manifest
-  namespace: argo-events
+  namespace: argo
 spec:
   templates:
     - name: update-manifest
@@ -478,7 +498,7 @@ spec:
 ---
 metadata:
   name: sync-argo-app
-  namespace: argo-events
+  namespace: argo
 spec:
   templates:
     - name: sync-argo-app
@@ -514,28 +534,20 @@ spec:
 metadata:
   name: mvn-build-webhook-simple
   generateName: mvn-build-webhook-
-  namespace: argo-events
+  namespace: argo
 spec:
   templates:
     - name: mvn-build
       inputs:
         parameters:
-          - name: git-url
-            value: http://gitea.gitea:3000/argo/kw-mvn.git
-          - name: revision
-            value: main
+          - name: git-url            
+          - name: revision        
           - name: image-url
-            value: 10.214.156.107:30005/kw-mvn
           - name: stage
-            value: dev
           - name: gitops-url
-            value: http://gitea.gitea:3000/argo/kw-mvn-deploy.git
           - name: gitops-branch
-            value: kust
           - name: argocd-app-name
-            value: kw-mvn
           - name: argocd-url
-            value: argocd-server.argocd
       outputs: {}
       metadata: {}
       steps:
@@ -604,34 +616,15 @@ spec:
         claimName: pvc-argo-build-cache
 ---
 ```
-- Workflow Template을 Submit 하여 빌드 프로세스를 구동합니다.
-
-**6) Argo Events 설치**
+- Argo Pipeline 실행을 위한 ServiceAccount와 권한을 설정합니다.
 
 ```bash
-# 네임스페이스, Argo Event 설치 (cluster scoped)
-$ kubectl create namespace argo-events
-$ kubectl apply -f https://raw.githubusercontent.com/argoproj/argo-events/stable/manifests/install.yaml
-# event bus 설치
-$ kubectl apply -n argo-events -f https://raw.githubusercontent.com/argoproj/argo-events/stable/examples/eventbus/native.yaml
-```
----
-
-**7) Trigger 설정**
-```bash
----
 $ cat << EOF >> argo-rbac.yml
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: argo-pipeline-runner
   namespace: argo
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: argo-pipeline-runner
-  namespace: argo-events
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -669,14 +662,31 @@ subjects:
   - kind: ServiceAccount
     name: argo-pipeline-runner
     namespace: argo
-  - kind: ServiceAccount
-    name: argo-pipeline-runner
-    namespace: argo-events
 EOF
 
 $ kubectl apply -f argo-rbac.yml
+```
 
+- Workflow Template을 Submit 하여 빌드 프로세스를 구동합니다.
+- https://10.214.156.101:30274/workflow-templates/argo/mvn-build-webhook-simple
+- Submit > Entropint : mvn-build > image-url : 자신의 레지스트리 주소로 변경 >Submit
+
+- Workflow 구동 결과와 ArgoCD의 동기화 결과, Rancher의 파드 구동 현황을 확인하고
+- endpoint URL에 접속합니다 (http://10.214.156.101:30099/)
+
+**6) Argo Events 설치**
+
+```bash
+# 네임스페이스, Argo Event 
+$ helm repo add argo https://argoproj.github.io/argo-helm
+$ helm install argo-events argo/argo-events -n argo
+$ kubectl apply -f https://raw.githubusercontent.com/argoproj/argo-events/stable/examples/eventbus/native.yaml
+```
 ---
+
+**7) Trigger 설정**
+
+```bash
 # 소스 레파지토리에서 main 브랜치 푸쉬시 웹훅을 통해 파이프라인이 기동되도록 설정합니다.
 $ cat << EOF >> gitea-trigger.yml
 ---
@@ -691,13 +701,9 @@ spec:
       - port: 12000
         targetPort: 12000
   webhook:
-    # EventSource can run multiple HTTP servers. Simply define a unique port to start a new HTTP server
-    example:
-      # port to run HTTP server on
+    gitea-push:
       port: "12000"
-      # endpoint to listen to
       endpoint: "/push"
-      # HTTP request method to allow. In this case, only POST requests are accepted
       method: "POST"
       filter:
         expression: "(body.ref == 'refs/heads/main')"
@@ -728,6 +734,23 @@ spec:
                       value: http://gitea.gitea:3000/argo/
                     - name: revision
                       value: main
+                    - name: git-url
+                      value: http://gitea.gitea:3000/argo/kw-mvn.git
+                    - name: revision
+                      value: main
+                    - name: image-url
+                      value: 10.214.156.101:30005/kw-mvn
+                    - name: stage
+                      value: dev
+                    - name: gitops-url
+                      value: http://gitea.gitea:3000/argo/kw-mvn-deploy.git
+                    - name: gitops-branch
+                      value: kust
+                    - name: argocd-app-name
+                      value: kw-mvn
+                    - name: argocd-url
+                      value: argocd-server.argocd
+
                 workflowTemplateRef:
                   name: mvn-build-webhook-simple
           operation: submit
