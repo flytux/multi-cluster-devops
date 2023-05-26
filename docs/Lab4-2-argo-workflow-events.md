@@ -1,4 +1,4 @@
-### Lab 4-2. Argo workflow and event
+### Lab 4-2. Argo workflow and events
 
 - Argo workflow를 이용하여 빌드 파이프라인을 구성합니다.
 - Argo event를 통해 Git 웹훅을 받아 파이프라인을 기동합니다.
