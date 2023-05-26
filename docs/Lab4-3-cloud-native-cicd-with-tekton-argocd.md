@@ -42,10 +42,10 @@ $ k apply -f tekton-ing.yml
 ~~~
 $ k create ns build
 $ k apply -f tekton-pipelines -n build
-# ArgoCD 사용자 패스워드 입력합니다.
+# ArgoCD 사용자 패스워드를 시크릿을 통해서 등록합니다.
 $ kubectl create secret generic -n build argocd-credentials-secret --from-literal=argocd-user-password='QHVwmkghjz1q7D2A' --from-literal=argocd-user-id='admin'
 
-# tekton cli 설치합니다.
+# tekton cli를 설치합니다.
 $ wget https://github.com/tektoncd/cli/releases/download/v0.31.0/tkn_0.31.0_Linux_x86_64.tar.gz
 $ sudo tar xvf tkn_0.31.0_Linux_x86_64.tar.gz -C /usr/local/bin
 
