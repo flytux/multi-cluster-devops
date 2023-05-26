@@ -1,4 +1,4 @@
-### Lab 4b. Cloud Native CI/CD with tekton and argocd
+### Lab 4-3. Cloud Native CI/CD with tekton and argocd
 
 ---
 
