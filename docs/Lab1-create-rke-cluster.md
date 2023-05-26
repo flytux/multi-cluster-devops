@@ -39,7 +39,7 @@ $ curl -sfL https://get.rke2.io | sh -
 
 
 ```bash
-$ systemctl enable rke2-server --now
+$ systemctl enable rke2-server --now &
 $ systemctl status -l rke2-server
 $ journalctl -fa
 
