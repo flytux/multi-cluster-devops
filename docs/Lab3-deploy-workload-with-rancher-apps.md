@@ -24,10 +24,8 @@ $ reboot
 - Rancher에 로그인 한 후
 - Cluster > Apps > Charts > Filter tomcat 선택합니다.
 - Apache Tomcat > Install > Namespace > tomcat 입력 > Next 를 선택합니다.
-- 128줄/170줄 변경 : persistence.enabled > false, service.type > ClusterIP
+- 170줄 변경 : service.type > ClusterIP
 ```bash
-- persistence:
-    enabled: false
 - service: 
     type: ClusterIP
 ```
