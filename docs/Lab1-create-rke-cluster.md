@@ -20,6 +20,12 @@
 - 인터넷 연결이 가능한 환경에서 실행합니다.
 - sudo 권한이 있는 사용자 계정과 4 Core, 16 Gi, 100 GB VM 3기를 준비합니다.
 
+> RHEL OS 의 경우 NetworkManager 예외설정  
+> $ cat << EOF >> /etc/NetworkManager/conf.d/rke2-canal.conf  
+> [keyfile]  
+> unmanaged-devices=interface-name:cali*;interface-name:flannel*  
+> EOF  
+
 ```bash
 
 # vm에 로그인 후
