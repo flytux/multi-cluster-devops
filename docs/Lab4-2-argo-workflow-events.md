@@ -277,13 +277,21 @@ spec:
       inputs:
         parameters:
           - name: git-url            
+            value: http://gitea.gitea:3000/argo/
           - name: revision        
+            value: main
           - name: image-url
+            value: 10.214.156.101:30005/kw-mvn
           - name: stage
+            value: dev
           - name: gitops-url
+            value: http://gitea.gitea:3000/argo/kw-mvn-deploy.git
           - name: gitops-branch
+            value: kust
           - name: argocd-app-name
+            value: kw-mvn
           - name: argocd-url
+            value: argocd-server.argocd
       outputs: {}
       metadata: {}
       steps:
