@@ -51,17 +51,17 @@ hosts_dir      = ["/etc/containerd/certs.d", "/etc/docker/certs.d"]
 EOF
 
 # admin / 1 로 로그인
-$ sudo nerdctl --insecure-registry login 10.214.156.72:30005
+$ sudo nerdctl --insecure-registry login 10.214.156.244:30005 # 노드IP 값으로 변경
 
 # 컨테이너 런타임에 Private Registry 인증 / insecure 설정
 # 레지스트리 주소를 자신의 주소로 변경합니다.
 $ cat << EOF | sudo tee /etc/rancher/rke2/registries.yaml
 mirrors:
-  10.214.156.101:30005:
+  10.214.156.244:30005:
     endpoint:
-      - http://10.214.156.101:30005
+      - http://10.214.156.244:30005
 configs:
-  10.214.156.101:30005:
+  10.214.156.244:30005:
     auth:
       username: admin 
       password: 1 
