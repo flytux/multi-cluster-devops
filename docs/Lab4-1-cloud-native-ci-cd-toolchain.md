@@ -1,4 +1,4 @@
-### Lab 4-1 Cloud Native CI/CD Toolchain
+### Lab 4-1 Cloud Native CI/CD Toolchains
 
 - Argo Workflow와 ArgoCD를 이용하여 Cloud Native CI/CD 환경을 구성합니다.
 - Git clone -> maven build -> image push -> argo-deploy 순서로 빌드 프로세스는 진행됩니다.
