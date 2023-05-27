@@ -37,7 +37,7 @@ metadata:
  name: loki-output
 spec:
  loki:
-   url: http://loki.loki:3000
+   url: http://loki.loki:3100
    configure_kubernetes_labels: true
    buffer:
      timekey: 1m
@@ -64,8 +64,8 @@ spec:
           stage: dev
 EOF
  
-$ k get flow -n deploy-kust-dev
-$ k get ouput -n deploy-kust-dev
+$ k get flow -n deploy
+$ k get ouput -n deploy
  
 
 #Nginx Logger 설치
