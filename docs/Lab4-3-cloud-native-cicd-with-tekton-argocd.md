@@ -50,7 +50,7 @@ $ kubectl create secret generic -n build argocd-credentials-secret --from-litera
 $ wget https://github.com/tektoncd/cli/releases/download/v0.31.0/tkn_0.31.0_Linux_x86_64.tar.gz
 $ sudo tar xvf tkn_0.31.0_Linux_x86_64.tar.gz -C /usr/local/bin
 
-$ k create -f tekton-pipelines/pr-kw-build.yml
+$ k create -f tekton-pipelines/pr-kw-build.yml -n build
 
 # 파이프라인 구동 로그를 확인합니다.
 $ tkn pr logs -f 
