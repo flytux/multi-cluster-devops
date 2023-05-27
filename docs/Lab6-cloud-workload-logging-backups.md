@@ -1,12 +1,13 @@
-Working ### Cloud Workload Loggign and Backups
+### Cloud Workload Loggign and Backups
 
 ---
+![Logging Operator](./logging.png)
 
-5. Logging Operator 설정
+**1. Logging Operator 설정**
 
 - Logging Operator 설치
-- Rancher 로그인 > 신규 클러스터 이동
-- Cluster Tools > Logging > Install > Install into Project > System > Next > Install
+- Rancher 로그인 > 클러스터 이동
+- Cluster Tools > Logging > Install > Install into Project > Observability > Next > Install # 기본값 설치
 - cattle-logging-system 내 fluentd / fluentbit 생성 확인
 
 - loki 설치
