@@ -1,7 +1,7 @@
 ### Cloud Workload Loggign and Backups
 
 ---
-<img src="./logging.png" width="850" height="600">
+<img src="./logging.png" width="850" height="700">
 
 **1. Logging Operator 설정**
 
