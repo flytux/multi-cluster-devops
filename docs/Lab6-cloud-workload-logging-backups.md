@@ -1,20 +1,22 @@
 ### Cloud Workload Loggign and Backups
 
 ---
+
 <img src="./logging.png" width="850" height="700">
+
+---
 
 **1. Logging Operator 설정**
 
 - Logging Operator 설치
 - Rancher 로그인 > 클러스터 이동
 - Cluster Tools > Logging > Install > Install into Project > Observability > Next > Install # 기본값 설치
-- 
-
-
-- Logging / Flow / Output 생성 (loki)
 
 ```bash
-# logging 생성  
+# 로그 수집기  설치 Loki
+$ helm install loki loki/loki-2.0.tgz -n loki --create-namespace
+
+# 로그 규칙을 적용할 새로운 Logging 객체 생성
 $ kubectl -n cattle-logging-system apply -f - <<"EOF"
 apiVersion: logging.banzaicloud.io/v1beta1
 kind: Logging
@@ -28,7 +30,7 @@ spec:
 EOF
   
 # loki output 생성  
-$ kubectl -n deploy-kust-dev apply -f - <<"EOF"
+$ kubectl -n deploy apply -f - <<"EOF"
 apiVersion: logging.banzaicloud.io/v1beta1
 kind: Output
 metadata:
@@ -45,12 +47,11 @@ EOF
 
 #Log Flow 생성
 
-$ kubectl -n deploy-kust-dev apply -f - <<"EOF"
+$ kubectl -n deploy apply -f - <<"EOF"
 apiVersion: logging.banzaicloud.io/v1beta1
 kind: Flow
 metadata:
   name: kw01-flow
-  namespace: deploy-kust-dev
 spec:
   filters:
     - tag_normaliser: {}
@@ -69,7 +70,7 @@ $ k get ouput -n deploy-kust-dev
 
 #Nginx Logger 설치
 
-$ kubectl -n deploy-kust-dev apply -f - <<"EOF"
+$ kubectl -n deploy apply -f - <<"EOF"
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -96,6 +97,7 @@ spec:
 EOF
 ``` 
 
-- Loki 로그 
 - Loki (admin / prom-operator)
   https://rancher.kw01/api/v1/namespaces/cattle-monitoring-system/services/http:rancher-monitoring-grafana:80/proxy/?orgId=1
+- Loki 데이터소스 설정
+- Grafana Explorer 
