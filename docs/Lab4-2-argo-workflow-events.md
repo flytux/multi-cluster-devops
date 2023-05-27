@@ -80,7 +80,7 @@ spec:
   storageClassName: local-path
 EOF
 
-$ kubectl apply -f pvc-argo.yml
+$ kubectl apply -f pvc-argo.yml -n argo
 ```
 ---
 
@@ -208,28 +208,25 @@ spec:
                 name: gitops-secret
                 key: gitops-repo-secret
         resources: {}
-        source: >
-          mkdir deploy && cd deploy
+        source: |
+          mkdir deploy && cd deploy  
           git init  
-          echo $GITOPS_REPO_CREDENTIALS >  ~/.git-credentials
-          cat ~/.git-credentials  
-          git config credential.helper store
+          echo $GITOPS_REPO_CREDENTIALS >  ~/.git-credentials  
+          cat ~/.git-credentials    
+          git config credential.helper store  
           git remote add origin {{inputs.parameters.gitops-url}}  
-          git remote -v 
-          git -c http.sslVerify=false fetch --depth 1 origin
+          git remote -v  
+          git -c http.sslVerify=false fetch --depth 1 origin  
           {{inputs.parameters.gitops-branch}}  
           git checkout {{inputs.parameters.gitops-branch}}  
-          echo "updating image to {{inputs.parameters.image-tag}}" 
-          sed -i "s|newTag:.*$|newTag: {{inputs.parameters.image-tag}}|"
-          dev/kustomization.yaml 
-          cat dev/kustomization.yaml | grep newTag 
-          git config --global user.email "argo@devops" 
-          git config --global user.name "Argo Workflow Pipelines"
-          git add . 
-          git commit --allow-empty -m "[argo] updating image to
-          {{inputs.parameters.image-tag}}" 
-          git -c http.sslVerify=false push origin
-          {{inputs.parameters.gitops-branch}}
+          echo "updating image to {{inputs.parameters.image-tag}}"  
+          sed -i "s|newTag:.*$|newTag: {{inputs.parameters.image-tag}}|" dev/kustomization.yaml    
+          cat dev/kustomization.yaml | grep newTag  
+          git config --global user.email "argo@devops"  
+          git config --global user.name "Argo Workflow Pipelines"  
+          git add .  
+          git commit --allow-empty -m "[argo] updating image to {{inputs.parameters.image-tag}}" 
+          git -c http.sslVerify=false push origin {{inputs.parameters.gitops-branch}}  
   serviceAccountName: argo-pipeline-runner
 ---
 metadata:
@@ -408,7 +405,7 @@ subjects:
     namespace: argo
 EOF
 
-$ kubectl apply -f argo-rbac.yml
+$ kubectl apply -f argo-rbac.yml -n argo
 ```
 
 - Workflow Template을 Submit 하여 빌드 프로세스를 구동합니다.
@@ -417,6 +414,8 @@ $ kubectl apply -f argo-rbac.yml
 
 - Workflow 구동 결과와 ArgoCD의 동기화 결과, Rancher의 파드 구동 현황을 확인하고
 - endpoint URL에 접속합니다 (http://10.214.156.101:30099/)
+
+---
 
 **4) Argo Events 설치**
 
@@ -508,7 +507,7 @@ spec:
     serviceAccountName: argo-pipeline-runner
 EOF
 
-$ kubectl apply -f gitea-trigger.yml
+$ kubectl apply -f gitea-trigger.yml -n argo
 ```
 ---
 
