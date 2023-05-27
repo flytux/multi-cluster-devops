@@ -3,7 +3,7 @@
 
 ### Lab 1. [Create RKE cluster](./docs/Lab1-create-rke-cluster.md)
 ### Lab 2. [Install Rancher for Managing Multi-Clusters](./docs/Lab2-install-rancher-for-managing-multi-clusters.md)
-### Lab 3. [Deploy workload with Rancher Apps](./docs/Lab3-deploy-workload-with-rancher-apps.md)
+### Lab 3. [Deploy workloads with Rancher Apps](./docs/Lab3-deploy-workloads-with-rancher-apps.md)
 ### Lab 4. Cloud Native CI/CD
 > #### Lab 4-2 [Cloud Native CI/CD Toolchain](./docs/Lab4-1-cloud-native-ci-cd-toolchain.md)
 > #### Lab 4-2 [Argo Workflow and Events](./docs/Lab4-2-argo-workflow-events.md)
