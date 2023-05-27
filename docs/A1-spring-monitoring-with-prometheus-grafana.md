@@ -1,4 +1,4 @@
-### A1/ Spring Monitoring with Prometheus Service Monitor and Grafana
+### A1. Spring Monitoring with Prometheus Service Monitor and Grafana
 
 ---
 
