@@ -4,7 +4,9 @@
 
 **1) 랜처 모니터링과 Istio 서비스를 설치합니다.**
 - Cluster > Cluster Tools > Monitoring > Install 
-- Into the project "System" > Next > Install
+- Into the project "System" > Next > 기본값 유지 > Install
+
+
 - Cluster > local > Apps > Istio > Install
 - Into the project "System" > Next > Install
 
