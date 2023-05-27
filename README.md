@@ -5,7 +5,7 @@
 ### Lab 2. [Install Rancher for Managing Multi-Clusters](./docs/Lab2-install-rancher-for-managing-multi-clusters.md)
 ### Lab 3. [Deploy workloads with Rancher Apps](./docs/Lab3-deploy-workloads-with-rancher-apps.md)
 ### Lab 4. Cloud Native CI/CD
-> #### Lab 4-2 [Cloud Native CI/CD Toolchain](./docs/Lab4-1-cloud-native-ci-cd-toolchain.md)
+> #### Lab 4-2 [Cloud Native CI/CD Toolchains](./docs/Lab4-1-cloud-native-ci-cd-toolchains.md)
 > #### Lab 4-2 [Argo Workflow and Events](./docs/Lab4-2-argo-workflow-events.md)
 > #### Lab 4-3 [Tekton and ArgoCD](./docs/Lab4-3-cloud-native-cicd-with-tekton-argocd.md)
 ### Lab 5. [Service Mesh with Istio / Kiali](./docs/Lab5-service-mesh-with-istio.md)
