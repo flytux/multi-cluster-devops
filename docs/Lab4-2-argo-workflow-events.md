@@ -514,7 +514,7 @@ $ kubectl apply -f gitea-trigger.yml -n argo
 - Gitea의 소스 레파지토리에 웹훅을 등록합니다.
 - https://gitea.kw01/argo/kw-mvn/settings/hooks
 - Add Webhook > Gitea 
-- Target URL 설정 : http://gitea-event-source-eventsource-svc.argo-events:12000/push
+- Target URL 설정 : http://gitea-event-source-eventsource-svc.argo:12000/push
 - Test Delivery 클릭하여 웹훅 동작을 확인합니다.
 - gitea.kw01/argo/kw-mvn의 main 브랜치를 Push하여 파이프라인 기동을 확인합니다.
 
