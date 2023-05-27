@@ -193,9 +193,9 @@ $ kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/
 # Ingress Controller 설정 변경
 $ kubectl edit ds -n kube-system rke2-ingress-nginx-controller
 
-# 52  줄에 아래 내용 추가
+# 52 줄에 아래 내용 추가 : - --enable-ssl-passthrough
     - --watch-ingress-without-class=true
-    - --enable-ssl-passthrough
+    - --enable-ssl-passthrough # 추가 내용
 # 저장 :wq!
 
 # Ingress 설정
