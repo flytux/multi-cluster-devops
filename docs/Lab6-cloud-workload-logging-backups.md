@@ -8,13 +8,8 @@
 - Logging Operator 설치
 - Rancher 로그인 > 클러스터 이동
 - Cluster Tools > Logging > Install > Install into Project > Observability > Next > Install # 기본값 설치
-- cattle-logging-system 내 fluentd / fluentbit 생성 확인
+- 
 
-- loki 설치
-
-```bash
-$ helm install loki loki/loki -n loki --create-namespace
-```
 
 - Logging / Flow / Output 생성 (loki)
 
