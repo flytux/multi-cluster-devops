@@ -1,7 +1,16 @@
 
-## *Multi-cluster-management from installations to CI/CD pipelines*
+# *Multi-cluster-management from installations to CI/CD pipelines*
 
-### Lab 1. [Create RKE cluster](./docs/Lab1-create-rke-cluster.md)
+## Objectives
+- Rancher를 이용한 멀티 클러스터 설치와 클러스터 관리 환경을 구성합니다.
+- MSA Outer Architecture - CI/CD, Service Mesh, Monitoring, Logging 서비스를 구성합니다.
+- Cloud Native DevOps를 위한 표준 ToolChain을 구성하고 빌드 프로세스를 구성합니다.
+
+---
+
+## Agenda  
+
+### Lab 1. [Create RKE cluster](./docs/Lab1-create-rke-cluster.md) 
 ### Lab 2. [Install Rancher for Managing Multi-Clusters](./docs/Lab2-install-rancher-for-managing-multi-clusters.md)
 ### Lab 3. [Deploy workloads with Rancher Apps](./docs/Lab3-deploy-workloads-with-rancher-apps.md)
 ### Lab 4. Cloud Native CI/CD
