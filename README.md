@@ -9,6 +9,6 @@
 > #### Lab 4-2 [Argo Workflow and Events](./docs/Lab4-2-argo-workflow-events.md)
 > #### Lab 4-3 [Tekton and ArgoCD](./docs/Lab4-3-cloud-native-cicd-with-tekton-argocd.md)
 ### Lab 5. [Service Mesh with Istio / Kiali](./docs/Lab5-service-mesh-with-istio.md)
-### Lab 6. [Cloud Workload Logging / Backups](./docs/Lab6-cloud-workload-logging-backups.md)
+### Lab 6. [Cloud Workload Logging](./docs/Lab6-cloud-workload-logging.md)
 ---
 ### A1. [Spring Monitoring with Prometheus Service Monitor and Grafana](./docs/A1-spring-monitoring-with-prometheus-grafana.md)
