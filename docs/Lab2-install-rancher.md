@@ -1,4 +1,4 @@
-### Lab 2. Install Rancher with multi cluster management
+### Lab 2. Install Rancher for managing multi clusters
 
 - 생성된 클러스터에 Rancher를 helm chart를 이용하여 설치합니다.
 - Rancher는 kubernetes 클러스터 관리를 위해 tls 통신을 기본으로 하여 cert-manager를 통한 인증서 관리가 필요합니다.
