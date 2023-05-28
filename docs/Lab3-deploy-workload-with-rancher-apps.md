@@ -47,3 +47,14 @@ $ reboot
 
 
 - Cluster > Services > nginx > http 클릭합니다. 
+
+**3) mariadb 설치**
+
+- Apps > Filter : maria > MariaDB > Install > Create Namespace : mariadb > Next > Install
+- Storage > Secrets > mariadb > mariadb-root-password 확인
+- Workload > mariadb > 오른쪽 끝 ... > execute shell
+- mysql -uroot -p > 패스워드 입력
+- use mysql > select * from user;
+
+
+
