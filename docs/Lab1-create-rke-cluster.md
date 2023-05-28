@@ -49,7 +49,7 @@ $ systemctl enable rke2-server --now &
 $ systemctl status -l rke2-server
 $ journalctl -fa
 
-# k8sadm 계정을 생성합니다.
+#(Optional) k8sadm 계정을 생성합니다.
 $ groupadd -g 2000 k8sadm
 $ useradd -m -u 2000 -g 2000 -s /bin/bash k8sadm
 $ echo -e "1\n1" | passwd k8sadm >/dev/null 2>&1
@@ -110,8 +110,34 @@ $ export INSTALL_RKE2_VERSION=v1.24.13+rke2r1
 $ curl -sfL https://get.rke2.io | INSTALL_RKE2_TYPE="agent" sh -
 $ mkdir -p /etc/rancher/rke2/
 $ cat <<EOF >> /etc/rancher/rke2/config.yaml
-server: https://마스터노드 IP:9345
+server: https://마스터노드IP:9345
 token: 클러스터 토큰
 EOF
 $ systemctl enable rke2-agent.service --now
+```
+
+**3) 클러스터 버전 Upgrade**
+
+- rke2 스크립트를 실행하여 각 노드 별 클러스터 버전을 upgrade 합니다.
+
+```bash
+# 현재 클러스터 버전 확인
+$ k get nodes
+
+# 마스터노드 버전 upgrade
+$ curl -sfL https://get.rke2.io | INSTALL_RKE2_VERSION=v1.25.9+rke2r1 sh -
+$ systemctl restart rke2-server
+
+# 마스터노드 버전 확인
+$ k get nodes
+
+# 워커노드 버전 upgrade
+# 워커노드 ssh / root 로 로그인
+$ export INSTALL_RKE2_VERSION=v1.25.9+rke2r1
+$ curl -sfL https://get.rke2.io | INSTALL_RKE2_TYPE="agent" sh -
+$ systemctl restart rke2-agent
+
+# 클러스터 버전 확인
+# 마스터노드 ssh / root 로그인
+$ k get nodes
 ```
