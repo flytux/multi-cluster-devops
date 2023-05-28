@@ -19,7 +19,7 @@ $ cat <<EOF | kubectl apply -f -
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
-  name: rancher-demo
+  name: quickstart
   namespace: elastic-system
 spec:
   version: 8.8.0
@@ -34,7 +34,7 @@ $ cat <<EOF | kubectl apply -f -
 apiVersion: kibana.k8s.elastic.co/v1
 kind: Kibana
 metadata:
-  name: rancher-demo
+  name: quickstart
   namespace: elastic-system
 spec:
   version: 8.8.0
