@@ -265,7 +265,7 @@ spec:
   serviceAccountName: argo-pipeline-runner
 ---
 metadata:
-  name: mvn-build-webhook-simple
+  name: mvn-build-webhook
   generateName: mvn-build-webhook-
   namespace: argo
 spec:
@@ -495,7 +495,7 @@ spec:
                       value: argocd-server.argocd
 
                 workflowTemplateRef:
-                  name: mvn-build-webhook-simple
+                  name: mvn-build-webhook
           operation: submit
           parameters:
             - src:
