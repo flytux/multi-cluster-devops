@@ -19,7 +19,8 @@ $ cat <<EOF | kubectl apply -f -
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
-  name: quickstart
+  name: rancher-demo
+  namespace: elastic-system
 spec:
   version: 8.8.0
   nodeSets:
@@ -33,7 +34,8 @@ $ cat <<EOF | kubectl apply -f -
 apiVersion: kibana.k8s.elastic.co/v1
 kind: Kibana
 metadata:
-  name: quickstart
+  name: rancher-demo
+  namespace: elastic-system
 spec:
   version: 8.8.0
   count: 1
