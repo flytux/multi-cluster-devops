@@ -15,12 +15,13 @@
 $ kubectl create -f https://download.elastic.co/downloads/eck/2.8.0/crds.yaml
 $ kubectl apply -f https://download.elastic.co/downloads/eck/2.8.0/operator.yaml
 
+$ k create ns logging
 $ cat <<EOF | kubectl apply -f -
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
   name: quickstart
-  namespace: elastic-system
+  namespace: logging
 spec:
   version: 8.8.0
   nodeSets:
@@ -35,7 +36,7 @@ apiVersion: kibana.k8s.elastic.co/v1
 kind: Kibana
 metadata:
   name: quickstart
-  namespace: elastic-system
+  namespace: logging
 spec:
   version: 8.8.0
   count: 1
