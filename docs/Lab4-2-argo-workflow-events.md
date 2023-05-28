@@ -4,6 +4,8 @@
 - Argo event를 통해 Git 웹훅을 받아 파이프라인을 기동합니다.
 
 ---
+<img title="gitea-argo-workflow" alt="gitea-argo" src="./gitea-argo-workflow.png" >
+---
 
 **1) Argo workflow 설치**
 
