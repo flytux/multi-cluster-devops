@@ -33,11 +33,11 @@ $ kubectl get pods -l app=rancher -A
 $ kubectl rollout status deploy rancher -n cattle-system
 
 
-# hosts 파일에 Rancher host명 추가
-$ cat <<EOF | sudo tee /etc/hosts
+# 접속할 PC hosts 파일에 Rancher host명 추가
+# 윈도우즈 C:\Windows\System32\drivers\etc\hosts
 # 10.2.100.100  rancher.kw01
 랜처.서버.IP.명  rancher.kw01 # 설치시 등록한 도메인 명 등록
-EOF
+EOF  
 ```
 - https://rancher.kw01 접속 (admin / admin)
 
@@ -62,6 +62,7 @@ $ journalctl -fa
 
 # 클러스터 접속 설정
 
+#(Optional) k8sadm 계정 생성
 $ groupadd -g 2000 k8sadm
 $ useradd -m -u 2000 -g 2000 -s /bin/bash k8sadm
 $ echo -e "1\n1" | passwd k8sadm >/dev/null 2>&1
