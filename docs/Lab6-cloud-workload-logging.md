@@ -56,19 +56,20 @@ $ helm upgrade --install --wait --create-namespace --namespace logging logging-o
 ```bash
 
 # 로그 규칙을 적용할 새로운 Logging 객체 생성
-kubectl -n logging apply -f - <<"EOF"
+$ kubectl -n logging apply -f - <<"EOF"
 apiVersion: logging.banzaicloud.io/v1beta1
 kind: Logging
 metadata:
   name: default-logging-simple
 spec:
-  fluentd: {}
+  fluentd:
+    logLevel: debug
   fluentbit: {}
   controlNamespace: logging
 EOF
 
 # log output 생성  
-kubectl -n logging apply -f - <<"EOF"
+$ kubectl -n logging apply -f - <<"EOF"
 apiVersion: logging.banzaicloud.io/v1beta1
 kind: Output
 metadata:
