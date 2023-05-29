@@ -1,4 +1,4 @@
-### Lab 3. deploy workloads with rancher apps.md
+### Lab 3. deploy workloads with rancher apps
 
 - Rancher의 Apps 패키지를 이용하여 클러스터 서비스를 설치합니다.
 - Helm chart 레파지토리를 추가하여 관리할 수 있습니다.
