@@ -226,6 +226,10 @@ spec:
 EOF
 
 $ kubectl get secret --namespace logging grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+
+# FluentD config 확인
+$ k get secret default-logging-simple-fluentd-app -o jsonpath='{.data.fluentd\.conf}' | base64 -d
+
 ```
 ---
 **5. Loki 로그 확인**
