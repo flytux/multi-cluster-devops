@@ -14,6 +14,9 @@
 - 공인인증서 대신 insecure 설정을 적용하고 containerd에 인증 정보를 등록합니다.
 
 ```bash
+
+$ export MY_NODE1_IP=10.178.0.25 #자신의 Node1번 IP로 변경
+
 # Docker Registry Helm Chart 설치
 $ helm repo add twuni https://helm.twun.io
 $ helm fetch twuni/docker-registry
@@ -33,7 +36,7 @@ EOF
 
 $ helm install docker-registry -f values.yaml docker-registry-2.2.2.tgz -n registry --create-namespace
 
-$ curl -v localhost:30005/v2/_catalog
+$ curl -v $MY_NODE1_IP:30005/v2/_catalog
 
 # nerdctl download
 $ wget https://github.com/containerd/nerdctl/releases/download/v1.3.1/nerdctl-full-1.3.1-linux-amd64.tar.gz
@@ -51,17 +54,17 @@ hosts_dir      = ["/etc/containerd/certs.d", "/etc/docker/certs.d"]
 EOF
 
 # admin / 1 로 로그인
-$ sudo nerdctl --insecure-registry login 10.214.156.244:30005 # 노드IP 값으로 변경
+$ sudo nerdctl --insecure-registry login $MY_NODE1_IP:30005 # 노드IP 값으로 변경
 
 # 컨테이너 런타임에 Private Registry 인증 / insecure 설정
 # 레지스트리 주소를 자신의 주소로 변경합니다.
 $ cat << EOF | sudo tee /etc/rancher/rke2/registries.yaml
 mirrors:
-  10.214.156.244:30005:
+  $MY_NODE1_IP:30005:
     endpoint:
-      - http://10.214.156.244:30005
+      - http://$MY_NODE1_IP:30005
 configs:
-  10.214.156.244:30005:
+  $MY_NODE1_IP:30005:
     auth:
       username: admin 
       password: 1 
@@ -70,6 +73,24 @@ configs:
 EOF
 
 $ sudo systemctl restart rke2-server
+
+# 워커노드도 동일하게 적용해 줍니다.
+$ cat << EOF | sudo tee /etc/rancher/rke2/registries.yaml
+mirrors:
+  $MY_NODE1_IP:30005:
+    endpoint:
+      - http://$MY_NODE1_IP:30005
+configs:
+  $MY_NODE1_IP:30005:
+    auth:
+      username: admin 
+      password: 1 
+    tls:
+      insecure_skip_verify: true
+EOF
+
+$ sudo systemctl restart rke2-agent
+
 
 # 아래 파일에 insecure 및 인증 설정 추가 확인 
 $ sudo cat /var/lib/rancher/rke2/agent/etc/containerd/config.toml
@@ -171,7 +192,7 @@ EOF
 
 > host 파일에 gitea.kw01 argocd.kw01을 추가합니다.  
 > rancher와 동일한 형태로 추가하면 됩니다.  
-> 10.214.156.101 rancher.kw01 argocd.kw01 argo.kw01 gitea.kw01  
+> 10.178.0.25 rancher.kw01 argocd.kw01 argo.kw01 gitea.kw01   #자신의 NODE1 IP
 
 - http://gitea.kw01 에 접속합니다.
 - server domain과 접속 URL을 http://gitea.kw01 로 설정하고 저장합니다.
@@ -258,7 +279,7 @@ EOF
 
 ```bash
   # 설치된 자신의 Docker Registry 주소로 변경합니다.
-  image: 10.214.156.101:30005/kw-mvn:init
+  image: 10.178.0.25:30005/kw-mvn:init
   # 저장후 commit 합니다.
 ```
 - https://gitea.kw01/argo/kw-mvn-deploy/src/branch/kust/dev/kustomization.yaml
@@ -266,7 +287,7 @@ EOF
 
 ```bash
   # 위와 동일하게 Docker Registry 주소로 변경합니다.
-  - name: 10.214.156.101:30005/kw-mvn
+  - name: 10.178.0.25:30005/kw-mvn
   # 저장후 commit 합니다.
 ```  
 ---
@@ -280,7 +301,7 @@ EOF
 # Git Source를 클론합니다.
 
 $ cat << EOF | sudo tee -a /etc/hosts
-10.214.156.101 gitea.kw01
+$MY_NODE1_IP gitea.kw01
 EOF
 
 $ git clone http://gitea.kw01/argo/kw-mvn 
@@ -295,13 +316,13 @@ $ sudo nerdctl run -it --rm --name my-maven-project \
   -Djib.allowInsecureRegistries=true
   
 # 생성된 이미지 태그를 확인합니다.
-$ curl -v 10.214.156.101:30005/v2/kw-mvn/tags/list
+$ curl -v $MY_NODE1_IP/v2/kw-mvn/tags/list
 
 # Argo GitOps Repositoty의 이미지 Tag를 init으로 변경하고 Commit 합니다.
 # http://gitea.kw01/argo/kw-mvn-deploy/src/branch/kust/dev/kustomization.yaml 10번째 줄
 
 images:
-- name: 10.214.156.101:30005/kw-mvn
+- name: 10.178.0.25:30005/kw-mvn
   newTag: init
 
 # ArgoCD에 로그인 해서 App을 동기화 합니다.
