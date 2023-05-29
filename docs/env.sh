@@ -10,7 +10,7 @@ echo 'source ~/.zsh/powerlevel10k/powerlevel10k.zsh-theme' >>~/.zshrc
 echo 'source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh' >>~/.zshrc
 echo 'source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh' >>~/.zshrc
 
-cat <<EOF >> ~/.bashrc
+cat <<EOF >> ~/.zshrc
 # k8s alias
 source <(kubectl completion zsh)
 alias k=kubectl
