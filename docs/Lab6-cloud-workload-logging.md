@@ -127,10 +127,6 @@ $ kubectl exec -ti -n logging default-logging-simple-fluentd-0 -- tail -f /fluen
 
 ```bash
 
-# elastic user 패스워드 확인
-$ kubectl -n logging get secret quickstart-es-elastic-user -o=jsonpath='{.data.elastic}' | base64 --decode; echo
-
-
 # kibana svc nodeport 변경
 $ k edit svc quickstart-kb-http
 spec:
