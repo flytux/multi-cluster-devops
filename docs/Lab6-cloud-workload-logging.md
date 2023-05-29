@@ -51,7 +51,9 @@ $ helm upgrade --install --wait --create-namespace --namespace logging logging-o
 
 ```
 
-- Logging 객체 생성 및 로그 수집
+---
+
+**2. Logging 객체 생성 및 로그 수집**
 
 ```bash
 
@@ -124,7 +126,9 @@ $ kubectl exec -ti -n logging default-logging-simple-fluentd-0 -- tail -f /fluen
 
 ```
 
-- Kibana를 통한 로그 확인
+---
+
+**3. Kibana를 통한 로그 확인**
 
 ```bash
 
@@ -144,3 +148,90 @@ $ kubectl -n logging get secret quickstart-es-elastic-user -o=jsonpath='{.data.e
 
 - user / 패스워드로 로그인
 - discover / create data view / select index pattern "fluentd"
+
+---
+
+**4. Grafana / Loki 로그 설정**
+
+```bash
+# Grafana Helm Repo 추가
+$ helm repo add grafana https://grafana.github.io/helm-charts
+
+# Grafana / Helm chart 다운로드
+$ helm fetch grafana/loki --version 2.9.1
+$ helm fetch grafana/grafana --version 6.21.3
+
+# Grafana / Loki 설치
+$ helm upgrade -i loki loki-2.9.1.tgz -n logging
+$ helm upgrade -i grafana grafana-6.21.3.tgz -n logging
+
+# Grafana Ingress 설정
+$ kubectl -n logging apply -f - <<"EOF"
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana
+  namespace: logging
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: grafana.kw01
+    http:
+      paths:
+      - backend:
+          service:
+            name: grafana
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+EOF
+
+# Loki Output 설정
+$ kubectl -n logging apply -f - <<"EOF"
+apiVersion: logging.banzaicloud.io/v1beta1
+kind: Output
+metadata:
+ name: loki-output
+spec:
+ loki:
+   url: http://loki:3100
+   configure_kubernetes_labels: true
+   buffer:
+     timekey: 1m
+     timekey_wait: 30s
+     timekey_use_utc: true
+EOF
+
+# Loki Flow 설정
+$ kubectl -n logging apply -f - <<"EOF"
+apiVersion: logging.banzaicloud.io/v1beta1
+kind: Flow
+metadata:
+  name: loki-flow
+spec:
+  filters:
+    - tag_normaliser: {}
+    - parser:
+        remove_key_name_field: true
+        reserve_data: true
+        parse:
+          type: nginx
+  match:
+    - select:
+        labels:
+          app.kubernetes.io/name: log-generator
+  localOutputRefs:
+    - loki-output
+EOF
+
+$ kubectl get secret --namespace logging grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+```
+---
+**5. Loki 로그 확인**
+- grafana login http://grafana.kw01
+- Loki datasource 설정 : Configuration > Data Source > Add Datasource > Loki > http://loki:3100 > Save & Test
+- Explore > Log Browser
+
+---
+
