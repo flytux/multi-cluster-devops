@@ -3,7 +3,7 @@
 
 ## Objectives
 - Rancher를 이용한 멀티 클러스터 설치와 클러스터 관리 환경을 구성합니다.
-- MSA Outer Architecture - CI/CD, Service Mesh, Monitoring, Logging 서비스를 구성합니다.
+- MSA Outer Architecture의 핵심 구성요소 인  CI/CD, Service Mesh, Monitoring, Logging 서비스를 설치하고 구성합니다.
 - Cloud Native DevOps를 위한 표준 ToolChain을 구성하고 빌드 프로세스를 구성합니다.
 
 ---
