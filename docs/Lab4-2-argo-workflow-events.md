@@ -281,7 +281,7 @@ spec:
           - name: revision        
             value: main
           - name: image-url
-            value: 10.214.156.101:30005/kw-mvn
+            value: 마스터노드IP:30005/kw-mvn
           - name: stage
             value: dev
           - name: gitops-url
@@ -412,11 +412,11 @@ $ kubectl apply -f argo-rbac.yml -n argo
 ```
 
 - Workflow Template을 Submit 하여 빌드 프로세스를 구동합니다.
-- https://10.214.156.101:30274/workflow-templates/argo/mvn-build-webhook-simple
+- https://마스터노드IP:30274/workflow-templates/argo/mvn-build-webhook-simple
 - Submit > Entropint : mvn-build > image-url : 자신의 레지스트리 주소로 변경 >Submit
 
 - Workflow 구동 결과와 ArgoCD의 동기화 결과, Rancher의 파드 구동 현황을 확인하고
-- endpoint URL에 접속합니다 (http://10.214.156.101:30099/)
+- endpoint URL에 접속합니다 (http://마스터노드IP:30099/)
 
 ---
 
@@ -426,7 +426,7 @@ $ kubectl apply -f argo-rbac.yml -n argo
 # 네임스페이스, Argo Event 
 $ helm repo add argo https://argoproj.github.io/argo-helm
 $ helm install argo-events argo/argo-events -n argo
-$ kubectl apply -f https://raw.githubusercontent.com/argoproj/argo-events/stable/examples/eventbus/native.yaml
+$ kubectl apply -f https://raw.githubusercontent.com/argoproj/argo-events/stable/examples/eventbus/native.yaml -n argo
 ```
 ---
 
