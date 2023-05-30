@@ -106,6 +106,7 @@ $ sudo cat /var/lib/rancher/rke2/server/token
 
 # Worker Node에 ssh 접속
 $ sudo -i
+
 $ export INSTALL_RKE2_VERSION=v1.24.13+rke2r1
 $ curl -sfL https://get.rke2.io | INSTALL_RKE2_TYPE="agent" sh -
 $ mkdir -p /etc/rancher/rke2/
