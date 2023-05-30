@@ -481,7 +481,7 @@ spec:
                     - name: revision
                       value: main
                     - name: image-url
-                      value: 10.214.156.101:30005/kw-mvn
+                      value: 마스터노드IP:30005/kw-mvn
                     - name: stage
                       value: dev
                     - name: gitops-url
