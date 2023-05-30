@@ -477,7 +477,7 @@ spec:
                 arguments:
                   parameters:
                     - name: git-url
-                      value: http://gitea.gitea:3000/argo/kw-mvn.git
+                      value: http://gitea.gitea:3000/argo/
                     - name: revision
                       value: main
                     - name: image-url
