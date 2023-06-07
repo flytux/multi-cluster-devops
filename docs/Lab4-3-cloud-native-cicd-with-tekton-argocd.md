@@ -48,8 +48,8 @@ $ wget https://github.com/tektoncd/cli/releases/download/v0.31.0/tkn_0.31.0_Linu
 $ sudo tar xvf tkn_0.31.0_Linux_x86_64.tar.gz -C /usr/local/bin
 
 # Tekton Pipeline 소스를 받아옵니다.
-$ git clone https://github.com/flytux/rancher-training
-$ cd rancher-training  
+$ git clone https://github.com/flytux/multi-cluster-devops.git  
+$ cd multi-cluster-devops  
 
 # 빌드에 사용할 네임스페이스를 생성합니다.
 $ k create ns build  
