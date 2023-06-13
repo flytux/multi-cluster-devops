@@ -24,7 +24,8 @@
 > $ cat << EOF >> /etc/NetworkManager/conf.d/rke2-canal.conf  
 > [keyfile]  
 > unmanaged-devices=interface-name:cali*;interface-name:flannel*  
-> EOF  
+> EOF
+> $ systemctl restart NetworkManager
 
 ```bash
 
