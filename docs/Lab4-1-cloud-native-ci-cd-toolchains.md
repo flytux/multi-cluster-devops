@@ -19,7 +19,6 @@ $ export MY_NODE1_IP=10.178.0.25 #자신의 Node1번 IP로 변경
 
 # Docker Registry Helm Chart 설치
 $ helm repo add twuni https://helm.twun.io
-$ helm fetch twuni/docker-registry
 
 $ cat << EOF >> values.yaml
 service:
@@ -34,7 +33,7 @@ persistence:
   storageClass: 'local-path'
 EOF
 
-$ helm install docker-registry -f values.yaml docker-registry-2.2.2.tgz -n registry --create-namespace
+$ helm install docker-registry -f values.yaml twuni/docker-registry -n registry --create-namespace
 
 $ curl -v $MY_NODE1_IP:30005/v2/_catalog
 
@@ -329,5 +328,7 @@ images:
 # https://argocd.kw01/applications/argocd/kw-mvn?view=tree&resource=
 # Sync > Syncronize
 
+# App에 접속합니다.
+# http://$MY_NODE1_IP:30099
 
 
