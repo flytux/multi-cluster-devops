@@ -13,4 +13,4 @@ spec:
     - deploy
   selector:
     matchLabels:
-      app: dev
+      stage: dev
