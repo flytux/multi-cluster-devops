@@ -43,7 +43,7 @@
         "#5195ce",
         "rgba(50, 172, 45, 0.97)"
       ],
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "decimals": 1,
       "editable": true,
       "error": false,
@@ -137,7 +137,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(245, 54, 54, 0.9)"
       ],
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "decimals": 1,
       "editable": true,
       "error": false,
@@ -228,7 +228,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(245, 54, 54, 0.9)"
       ],
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "decimals": 1,
       "editable": true,
       "error": false,
@@ -325,7 +325,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -430,7 +430,7 @@
         "#5195ce",
         "rgba(50, 172, 45, 0.97)"
       ],
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "decimals": null,
       "editable": true,
       "error": false,
@@ -520,7 +520,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -622,7 +622,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -738,7 +738,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -856,7 +856,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -976,7 +976,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -1096,7 +1096,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -1214,7 +1214,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -1308,7 +1308,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -1428,7 +1428,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -1548,7 +1548,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "decimals": 0,
       "fieldConfig": {
         "defaults": {
@@ -1645,7 +1645,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -1746,7 +1746,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -1847,7 +1847,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -1948,7 +1948,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -2071,7 +2071,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -2168,7 +2168,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -2283,7 +2283,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -2366,7 +2366,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -2481,7 +2481,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -2564,7 +2564,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -2658,7 +2658,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -2752,7 +2752,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -2860,7 +2860,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -2957,7 +2957,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -3068,7 +3068,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -3151,7 +3151,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "decimals": 0,
       "fieldConfig": {
         "defaults": {
@@ -3246,7 +3246,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -3349,7 +3349,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -3432,7 +3432,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -3545,7 +3545,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -3639,7 +3639,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -3733,7 +3733,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -3827,7 +3827,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -3921,7 +3921,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "RANCHER_MONITORING",
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -4024,7 +4024,7 @@
           "text": "10.42.0.221:8080",
           "value": "10.42.0.221:8080"
         },
-        "datasource": "RANCHER_MONITORING",
+        "datasource": "Prometheus",
         "definition": "label_values(jvm_classes_unloaded_classes_total, instance)",
         "hide": 0,
         "includeAll": false,
@@ -4050,7 +4050,7 @@
           "text": "kw-mvn",
           "value": "kw-mvn"
         },
-        "datasource": "RANCHER_MONITORING",
+        "datasource": "Prometheus",
         "definition": "label_values(jvm_classes_unloaded_classes_total{instance=\"$instance\"}, service)",
         "hide": 0,
         "includeAll": false,
@@ -4077,7 +4077,7 @@
           "text": "None",
           "value": ""
         },
-        "datasource": "RANCHER_MONITORING",
+        "datasource": "Prometheus",
         "definition": "",
         "hide": 0,
         "includeAll": false,
@@ -4103,7 +4103,7 @@
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "RANCHER_MONITORING",
+        "datasource": "Prometheus",
         "definition": "",
         "hide": 0,
         "includeAll": true,
@@ -4129,7 +4129,7 @@
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "RANCHER_MONITORING",
+        "datasource": "Prometheus",
         "definition": "",
         "hide": 0,
         "includeAll": true,
