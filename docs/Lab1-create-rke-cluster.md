@@ -25,6 +25,7 @@
 > [keyfile]  
 > unmanaged-devices=interface-name:cali*;interface-name:flannel*  
 > EOF
+
 > $ systemctl restart NetworkManager
 
 ```bash
