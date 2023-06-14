@@ -90,7 +90,7 @@ $ kubectl apply -f pvc-argo.yml -n argo
 **3) 파이프라인 워크플로우 (WorkflowTemplate) 등록**
 
 - Argo workflow 는 NodePort 서비스를 통해 접속합니다.
-- http://노드IP:30274
+- https://노드IP:30274
 
 ```bash
 # WorkflowTemplate Revised
