@@ -277,7 +277,7 @@ spec:
       inputs:
         parameters:
           - name: git-url            
-            value: http://gitea.gitea:3000/argo/
+            value: http://gitea.gitea:3000/argo/kw-mvn.git
           - name: revision        
             value: main
           - name: image-url
@@ -412,7 +412,7 @@ $ kubectl apply -f argo-rbac.yml -n argo
 ```
 
 - Workflow Template을 Submit 하여 빌드 프로세스를 구동합니다.
-- https://마스터노드IP:30274/workflow-templates/argo/mvn-build-webhook-simple
+- https://마스터노드IP:30274/workflow-templates/argo/mvn-build-webhook
 - Submit > Entropint : mvn-build > image-url : 자신의 레지스트리 주소로 변경 >Submit
 
 - Workflow 구동 결과와 ArgoCD의 동기화 결과, Rancher의 파드 구동 현황을 확인하고
