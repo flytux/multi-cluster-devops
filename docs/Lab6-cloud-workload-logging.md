@@ -146,7 +146,7 @@ $ kubectl -n logging get secret quickstart-es-elastic-user -o=jsonpath='{.data.e
 ``` 
 - https://노드IP:노드포트
 
-- user / 패스워드로 로그인
+- user : elastic / 패스워드로 로그인
 - discover / create data view / select index pattern "fluentd"
 
 ---
