@@ -239,3 +239,66 @@ $ k get secret default-logging-simple-fluentd-app -o jsonpath='{.data.fluentd\.c
 
 ---
 
+**6. s3 로그 저장**
+
+```bash
+
+# s3 저장소 인증정보를 Secret에 추가
+# s3 output를 추가하고 flow에 등록
+---
+apiVersion: v1
+data:
+  access_key_id: Qjg3MDZBNjlCN0U0MUNFOTc4QUI=
+  secret_access_key: N0M0OEJENDFDNjc5OTNBRDhCNjkzQTZCMzM1RUZCNkUyNzkyMUFBNA==
+kind: Secret
+metadata:
+  name: s3-auth
+  namespace: ns-app-core-dev
+type: Opaque
+- apiVersion: logging.banzaicloud.io/v1beta1
+  kind: Flow
+  metadata:
+    name: app-log-flow
+    namespace: ns-app-core-dev
+  spec:
+    filters:
+    - parser:
+        parse:
+          type: json
+        remove_key_name_field: false
+        reserve_data: true
+    localOutputRefs:
+    - es-output
+    - s3-output
+    match:
+    - select:
+        labels:
+          tier: backend
+---
+apiVersion: logging.banzaicloud.io/v1beta1
+kind: Output
+metadata:
+  name: s3-output
+  namespace: ns-app-core-dev
+spec:
+  s3:
+    aws_key_id:
+      valueFrom:
+        secretKeyRef:
+          key: access_key_id
+          name: s3-auth
+    aws_sec_key:
+      valueFrom:
+        secretKeyRef:
+          key: secret_access_key
+          name: s3-auth
+    buffer:
+      timekey: 1m
+      timekey_use_utc: true
+      timekey_wait: 30s
+    force_path_style: "true"
+    path: app-log/${tag}/%Y/%m/%d/
+    s3_bucket: hro-app-log
+    s3_endpoint: https://kr.object.private.fin-ncloudstorage.com
+    s3_region: kr-standard
+```
