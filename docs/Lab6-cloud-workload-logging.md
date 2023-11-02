@@ -132,11 +132,18 @@ $ kubectl exec -ti -n logging default-logging-simple-fluentd-0 -- tail -f /fluen
 
 ```bash
 
+ingress 에 아래 annotation 추가
+
+nginx.ingress.kubernetes.io/proxy-ssl-secret: "resources/elastic-certificate-pem"
+nginx.ingress.kubernetes.io/proxy-ssl-verify: "false"
+nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+
 # kibana svc nodeport 변경
 $ k edit svc quickstart-kb-http
 spec:
   type: NodePort
 
+# nodeport 접속 시
 # Node Port 확인
 $ k get svc
 
