@@ -82,18 +82,6 @@ subjects:
     namespace: build
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: triggers--eventlistener-binding
-subjects:
-- kind: ServiceAccount
-  name: sa-pipeline-trigger
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: tekton-triggers-eventlistener-roles
----
-apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: triggers-eventlistener-clusterbinding
@@ -101,6 +89,19 @@ subjects:
 - kind: ServiceAccount
   name: sa-pipeline-trigger
   namespace: build
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tekton-triggers-eventlistener-clusterroles
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: triggers-eventlistener-clusterbinding-tekton-pipelines-ns
+subjects:
+- kind: ServiceAccount
+  name: sa-pipeline-trigger
+  namespace: tekton-pipelines
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
