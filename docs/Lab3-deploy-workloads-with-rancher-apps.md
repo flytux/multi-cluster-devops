@@ -7,22 +7,8 @@
 
 **1) 클러스터 Apps을 이용한 서비스 설치**
 
-- local-path storeage class를 설치합니다.
 - tomcat apps 설치하고 Rancher Proxy로 접속합니다.
 
-
-```bash
-# local-path storage 설치
-$ kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/v0.0.24/deploy/local-path-storage.yaml
-$ kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
-
-# rhel selinux를 사용하는 경우 local-path-storage 사용에 제약이 있어 disabled 합니다.
-$ setenforce 0
-
-# 영구적용
-$ sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
-$ reboot
-```
 
 - Rancher에 로그인 한 후
 - Cluster > Apps > Charts > Filter tomcat 선택합니다.
