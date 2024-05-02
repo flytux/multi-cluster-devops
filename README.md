@@ -10,7 +10,7 @@
 
 ## Agenda  
 
-### Lab 1. [Create RKE cluster](./docs/Lab1-create-rke-cluster.md) 
+### Lab 1. [Create KUBEADM cluster](./docs/Lab1-create-kubeadm-cluster.md) 
 ### Lab 2. [Install Rancher for Managing Multi-Clusters](./docs/Lab2-install-rancher-for-managing-multi-clusters.md)
 ### Lab 3. [Deploy Workloads with Rancher Apps](./docs/Lab3-deploy-workloads-with-rancher-apps.md)
 ### Lab 4. Cloud Native CI/CD
