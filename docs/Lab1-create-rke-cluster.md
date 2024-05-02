@@ -1,4 +1,4 @@
-### Lab 1. Create RKE Cluster
+### Lab 1. Create KubeADM Cluster
 
 ---
 
@@ -7,69 +7,63 @@
 ---
 ![cluster-config](./cluster-config.png)
 
-- rke2 클러스터 (1 노드)를 설치하고 워커노드를 추가합니다.
-- rke2 는 설치 스크립트를 이용하여 쉽게 설치할 수 있습니다.
-- rancher에서 지원하는 클러스터 버전을 확인하고 해당 원하는 버전을 설치합니다. 
-  (https://github.com/rancher/rancher/releases/tag/v2.7.3)
+- kubeadm 클러스터 1 Master + 1 Worker 노드를 Terraform을 이용하여 설치합니다. (https://github.com/flytux/terraform-kube/tree/main/kubeadm)
 
 ---
 
-**1) RKE2 cluster 설치**
+**1) kubeadm cluster 설치**
 
-- rke2 설치 스크립트를 이용하여 설치합니다.
-- 인터넷 연결이 가능한 환경에서 실행합니다.
-- sudo 권한이 있는 사용자 계정과 4 Core, 16 Gi, 100 GB VM 3기를 준비합니다.
 
-> RHEL OS 의 경우 NetworkManager 예외설정  
-> $ cat << EOF >> /etc/NetworkManager/conf.d/rke2-canal.conf  
-> [keyfile]  
-> unmanaged-devices=interface-name:cali*;interface-name:flannel*  
-> EOF
-
-> $ systemctl restart NetworkManager
+- sudo 권한이 있는 사용자 계정과 4 Core, 16 Gi, 100 GB VM 2기를 준비합니다.
+- ssh-key를 생성하여 각 VM에 root 계정에 authorized_key를 추가하여 ssh 로그인 이 가능하도록 설정합니다.
+- terraform 모듈의 variables에 ssh-key 정보와 클러스터를 생성할 VM 정보를 편집하고 terraform apply를 실행하여 클러스터를 생성합니다.
 
 ```bash
 
-# vm에 로그인 후
-$ sudo -i
+# 클러스터를 설치할 bastion 환경에서 실행합니다. Bastion 서버가 없는 경우 생성한 VM 중 한개의 VM에서 실행합니다.
 
-# 클러스터 버전 지정 시 INSTALL_RKE2_VERSION 지정
-# Rancher 2.7.3 버전은 RKE2 1.26 이하 버전 설치
-$ curl -sfL https://get.rke2.io | INSTALL_RKE2_VERSION=v1.24.13+rke2r1 sh -
+# terraform 모듈 clone
+$ git clone https://github.com/flytux/terraform-kube && cd terraform-kube
 
-# (Optional) 최신버전 설치 시
-$ curl -sfL https://get.rke2.io | sh -
-```
+# terraform download
+$ curl -L https://github.com/opentofu/opentofu/releases/download/v1.7.0/tofu_1.7.0_linux_amd64.tar.gz | tar xvz -C /usr/local/bin
+$ mv /usr/local/bin/tofu /usr/local/bin/tf
 
-- systemctl 로 rke2-server 서비스를 기동합니다.
-- 설치 중 systemctl로 rke2-server 서비스 상태를 확인합니다.
-- 설치 완료 후 kubeconfig 파일을 기본 위치에 복사합니다.
+# 등록할 ssh-key 생성
+$ ssh-keygen -b 2048 -t rsa -f .ssh/id_rsa.key -q -N ""
 
+# 각 VM에 생성한 ssh-key 등록
+# 각각의 VM에 생성한 .ssh/id_rsa.key.pub 파일을 root 계정의 authorized_key에 등록합니다.
 
-```bash
-$ systemctl enable rke2-server --now &
-$ systemctl status -l rke2-server
-$ journalctl -fa
+# variable 파일 편집
+$ cd kubeadm && vi variables.tf
 
-#(Optional) k8sadm 계정을 생성합니다.
-$ groupadd -g 2000 k8sadm
-$ useradd -m -u 2000 -g 2000 -s /bin/bash k8sadm
-$ echo -e "1\n1" | passwd k8sadm >/dev/null 2>&1
-$ echo ' k8sadm ALL=(ALL)   ALL' >> /etc/sudoers
+# ssh_key 파일 경로 편집
+variable "ssh_key" {default = ".ssh/id_rsa.key"}
+variable "master_ip" { default = "192.168.122.11" } # 마스터 노드 VM의 IP 설정
 
-$ su - k8sadm # 사용자 계정으로 kubectl 실행환경을 설정합니다.
-$ su - k8sadm
-$ mkdir ~/.kube
-$ sudo cp /etc/rancher/rke2/rke2.yaml ~/.kube/config
-$ sudo chown k8sadm ~/.kube/config
-$ sed -i 's/default/rms/g'  ~/.kube/config
+variable "kubeadm_nodes" {
+
+  type = map(object({ role = string, ip = string }))
+  default = {
+              kb-master-1 = { role = "master-init", ip = "192.168.122.11" },
+              kb-worker-1 = { role = "worker", ip = "192.168.122.21" }, # 워커 노드 VM의 IP 설정
+  }
+}
+
+# terraform apply 실행
+tf destroy -auto-approve; tf apply -auto-approve
+
+# 생성된 마스터 노드의 kubeconfig 파일을 계정의 kubeconfig에 추가합니다.
+# kubeconfig의 클러스터 명을 mgmt로 변경합니다.
+ssh -i ../kvm/.ssh-default/id_rsa.key -o StrictHostKeyChecking=no root@192.168.122.11 -- cat ~/.kube/config | sed  "s/kubernetes.*$/mgmt/g" > ~/.kube/config
 ```
 
 - kubectl / helm cli을 설치합니다.
 - shell 환경 변수에 alias를 설정합니다.
 
 ```bash
-$ curl -LO https://dl.k8s.io/release/v1.25.9/bin/linux/amd64/kubectl
+$ curl -LO https://dl.k8s.io/release/v1.28.8/bin/linux/amd64/kubectl
 $ chmod +x kubectl && sudo mv kubectl /usr/local/bin
 $ curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
@@ -82,8 +76,6 @@ alias k=kubectl
 alias kn='kubectl config set-context --current --namespace'
 alias kc='kubectl config use-context'
 alias kcg='kubectl config get-contexts'
-alias di='docker images --format "table {{.Repository}}:{{.Tag}}\t{{.ID}}\t{{.Size}}\t{{.CreatedSince}}"'
-alias kge="kubectl get events  --sort-by='.metadata.creationTimestamp'  -o 'go-template={{range .items}}{{.involvedObject.name}}{{\"\t\"}}{{.involvedObject.kind}}{{\"\t\"}}{{.message}}{{\"\t\"}}{{.reason}}{{\"\t\"}}{{.type}}{{\"\t\"}}{{.firstTimestamp}}{{\"\n\"}}{{end}}'"
 EOF
 
 $ source ~/.bashrc
@@ -93,54 +85,40 @@ $ k get nodes -o wide
 
 ---
 
-**2) RKE2 Worker Node 추가**
+**2) 클러스터 버전 Upgrade**
 
-- 위에서 설치한 RKE2 클러스터에 Worker Node를 연결합니다.
-- 연결할 마스터노드의 IP 정보와 클러스터 토큰을 확인합니다.
-- 연결 정보를 설정하고 rke2 설치 명령어를 통해 설치합니다.
-
-```bash
-# 마스터 노드의 IP 확인
-$ ip a | grep inet
-
-# 클러스터 토큰 확인
-$ sudo cat /var/lib/rancher/rke2/server/token
-
-# Worker Node에 ssh 접속
-$ sudo -i
-
-$ export INSTALL_RKE2_VERSION=v1.24.13+rke2r1
-$ curl -sfL https://get.rke2.io | INSTALL_RKE2_TYPE="agent" sh -
-$ mkdir -p /etc/rancher/rke2/
-$ cat <<EOF >> /etc/rancher/rke2/config.yaml
-server: https://마스터노드IP:9345
-token: 클러스터 토큰
-EOF
-$ systemctl enable rke2-agent.service --now
-```
-
-**3) 클러스터 버전 Upgrade**
-
-- rke2 스크립트를 실행하여 각 노드 별 클러스터 버전을 upgrade 합니다.
+- terraform kubeadm upgrade 모듈을 이용하여 업그레이드를 수행합니다.
 
 ```bash
 # 현재 클러스터 버전 확인
 $ k get nodes
 
 # 마스터노드 버전 upgrade
-$ curl -sfL https://get.rke2.io | INSTALL_RKE2_VERSION=v1.25.9+rke2r1 sh -
-$ systemctl restart rke2-server
+$ cd ../kubeadm-upgrade
 
-# 마스터노드 버전 확인
-$ k get nodes
+# 업그레이드 대상 노드 정보 편집
+$ vi 01-variables.tf
 
-# 워커노드 버전 upgrade
-# 워커노드 ssh / root 로 로그인
-$ export INSTALL_RKE2_VERSION=v1.25.9+rke2r1
-$ curl -sfL https://get.rke2.io | INSTALL_RKE2_TYPE="agent" sh -
-$ systemctl restart rke2-agent
+variable "master_ip" { default = "192.168.122.11" }
 
-# 클러스터 버전 확인
-# 마스터노드 ssh / root 로그인
-$ k get nodes
+variable "new_version" { default = "v1.28.9" }
+
+variable "ssh_key" { default = "../kvm/.ssh-default/id_rsa.key" }
+
+variable "kubeadm_nodes" {
+
+  type = map(object({ role = string, ip = string}))
+  default = {
+              kubeadm-master-1 = { role = "master-init", ip = "192.168.122.11"},
+              kubeadm-worker-1 = { role = "worker",      ip = "192.168.122.21"},
+  }
+}
+
+# tf apply
+
+$ tf destroy -auto-approve; tf apply -auto-approve
+
+# 업그레이드 결과 확인
+$ kubectl get nodes -A
+
 ```
