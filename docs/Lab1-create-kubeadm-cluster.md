@@ -1,4 +1,4 @@
-### Lab 1. Create KubeADM Cluster
+### Lab 1. Create KUBEADM Cluster
 
 ---
 
