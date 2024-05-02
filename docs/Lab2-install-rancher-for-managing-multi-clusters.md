@@ -52,4 +52,15 @@ EOF
 - https://rancher.kw01 접속 (admin / admin)
 
 ---
+```bash
+# local-path storage 설치
+$ kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/v0.0.24/deploy/local-path-storage.yaml
+$ kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 
+# rhel selinux를 사용하는 경우 local-path-storage 사용에 제약이 있어 disabled 합니다.
+$ setenforce 0
+
+# 영구적용
+$ sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+$ reboot
+```
