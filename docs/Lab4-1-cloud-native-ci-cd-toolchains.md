@@ -209,12 +209,17 @@ $ kubectl create namespace argocd
 $ kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
 # Ingress Controller 설정 변경
-$ kubectl edit ds -n kube-system rke2-ingress-nginx-controller
+$ k edit deploy -n ingress-nginx ingress-nginx-controller
 
-# 52 줄에 아래 내용 추가 : - --enable-ssl-passthrough
-    - --watch-ingress-without-class=true
+# 63 줄에 아래 내용 추가 : - --enable-ssl-passthrough
+    - --enable-metrics=false
     - --enable-ssl-passthrough # 추가 내용
 # 저장 :wq!
+
+# deployment 재기동
+$ k scale deploy ingress-nginx-controller --replicas=0
+$ k scale deploy ingress-nginx-controller --replicas=1
+
 
 # Ingress 설정
 $ kubectl -n argocd apply -f - <<"EOF"  
@@ -241,12 +246,34 @@ spec:
               name: https
 EOF
 
+# argocd cli 다운로드
+$ wget https://github.com/argoproj/argo-cd/releases/download/v2.10.9/argocd-linux-amd64
+$ mv argocd-linux-amd64 /usr/local/bin/argocd && chmod +x /usr/local/bin/argocd
+
 # ArgoCD 초기 패스워드 확인
-$ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
-```
-- https://argocd.kw01 admin / 초기 패스워드로 로그인합니다.
+$ argocd admin initial-password -n argocd
+
 
 ```bash
+# Default Project 등록
+
+$ kubectl -n argocd apply -f - <<"EOF"
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: default
+  namespace: argocd
+spec:
+  sourceRepos:
+    - '*'
+  destinations:
+    - namespace: '*'
+      server: '*'
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+EOF
+
 # ArgoCD App 등록
 
 $ kubectl -n argocd apply -f - <<"EOF"
@@ -276,7 +303,7 @@ EOF
 
 ```bash
   # 설치된 자신의 Docker Registry 주소로 변경합니다.
-  image: 10.178.0.25:30005/kw-mvn:init
+  image: docker.kw01/kw-mvn:init
   # 저장후 commit 합니다.
 ```
 - https://gitea.kw01/argo/kw-mvn-deploy/src/branch/kust/dev/kustomization.yaml
@@ -284,7 +311,7 @@ EOF
 
 ```bash
   # 위와 동일하게 Docker Registry 주소로 변경합니다.
-  - name: 10.178.0.25:30005/kw-mvn
+  - name: docker.kw01/kw-mvn
   # 저장후 commit 합니다.
 ```  
 ---
@@ -305,15 +332,19 @@ $ git clone http://gitea.kw01/argo/kw-mvn
 $ cd kw-mvn
 
 # maven 빌드를 이용하여 컨테이너 이미지를 생성합니다.
-$ sudo nerdctl run -it --rm --name my-maven-project \
+$ sudo nerdctl run -it --rm \
   -v "$(pwd)":/usr/src/kw-mvn -w /usr/src/kw-mvn \
+  --add-host=docker.kw01:192.168.122.11 \
   maven:3.3-jdk-8 mvn clean compile jib:build \
-  -Dimage=10.214.156.101:30005/kw-mvn:init \
+  -Dimage=docker.kw01/kw-mvn:init \
   -DsendCredentialsOverHttp=true \
+  -Djib.to.auth.username=admin \
+  -Djib.to.auth.password=1 \
   -Djib.allowInsecureRegistries=true
+
   
 # 생성된 이미지 태그를 확인합니다.
-$ curl -v $MY_NODE1_IP/v2/kw-mvn/tags/list
+$ curl -L docker.kw01/v2/kw-mvn/tags/list
 
 # Argo GitOps Repositoty의 이미지 Tag를 init으로 변경하고 Commit 합니다.
 # http://gitea.kw01/argo/kw-mvn-deploy/src/branch/kust/dev/kustomization.yaml 10번째 줄
@@ -327,6 +358,6 @@ images:
 # Sync > Syncronize
 
 # App에 접속합니다.
-# http://$MY_NODE1_IP:30099
+# http://192.168.122.11:30099
 
 
