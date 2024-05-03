@@ -11,88 +11,86 @@
 **1) Docker Registry 설치**
 
 - CI/CD 빌드 후 컨테이너 이미지를 저장할 docker registry를 설치합니다.
-- 공인인증서 대신 insecure 설정을 적용하고 containerd에 인증 정보를 등록합니다.
+- 사설인증서를 생성하고 containerd에 인증 정보를 등록합니다.
 
 ```bash
 
-$ export MY_NODE1_IP=10.178.0.25 #자신의 Node1번 IP로 변경
+# 도커 레지스트리 용 사설 인증서 생성
+$ openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
+  -keyout docker.key -out docker.crt -subj '/CN=docker.kw01' \
+  -addext 'subjectAltName=DNS:docker.kw01'
 
 # Docker Registry Helm Chart 설치
 $ helm repo add twuni https://helm.twun.io
 
+$ kubectl create ns registry
+$ kubectl create secret tls docker-ingress-tls --key docker.key --cert docker.crt -n registry
+
 $ cat << EOF >> values.yaml
-service:
-  name: registry
-  type: NodePort
-  port: 5000
-  nodePort: 30005
+ingress:
+  enabled: true
+  className: nginx
+  path: /
+  hosts:
+    - docker.kw01
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+  tls:
+    - secretName: docker-ingress-tls
+      hosts:
+        - docker.kw01
 persistence:
   accessMode: 'ReadWriteOnce'
-  enabled: true
+  enabled: false
   size: 10Gi
   storageClass: 'local-path'
+
 EOF
 
-$ helm install docker-registry -f values.yaml twuni/docker-registry -n registry --create-namespace
+$ helm install docker-registry -f values.yaml twuni/docker-registry -n registry 
 
-$ curl -v $MY_NODE1_IP:30005/v2/_catalog
+# registry login 테스트
+$ cp docker.key docker.crt /usr/local/share/ca-certificates/
+$ update-ca-certificates
 
 # nerdctl download
 $ wget https://github.com/containerd/nerdctl/releases/download/v1.3.1/nerdctl-full-1.3.1-linux-amd64.tar.gz
 $ sudo tar Cxzvvf /usr/local nerdctl-full-1.3.1-linux-amd64.tar.gz
 
-# nerdctl 설정
-$ sudo mkdir -p /etc/nerdctl
-$ cat << EOF | sudo tee /etc/nerdctl/nerdctl.toml
-debug          = false
-debug_full     = false
-address        = "unix:///run/k3s/containerd/containerd.sock"
-namespace      = "k8s.io"
-cgroup_manager = "cgroupfs"
-hosts_dir      = ["/etc/containerd/certs.d", "/etc/docker/certs.d"]
-EOF
-
 # admin / 1 로 로그인
-$ sudo nerdctl --insecure-registry login $MY_NODE1_IP:30005 # 노드IP 값으로 변경
+$ nerdctl loing docker.kw01 # hosts 파일에 dns entry 추가
 
-# 컨테이너 런타임에 Private Registry 인증 / insecure 설정
-# 레지스트리 주소를 자신의 주소로 변경합니다.
-$ cat << EOF | sudo tee /etc/rancher/rke2/registries.yaml
-mirrors:
-  $MY_NODE1_IP:30005:
-    endpoint:
-      - http://$MY_NODE1_IP:30005
-configs:
-  $MY_NODE1_IP:30005:
-    auth:
-      username: admin 
-      password: 1 
-    tls:
-      insecure_skip_verify: true
-EOF
+# 컨테이너 런타임에 인증서 추가 (마스터/워코 모두 추가)
+$ scp -i ../terraform-kube/kvm/.ssh-default/id_rsa.key -o StrictHostKeyChecking=no docker.key root@192.168.122.11:/root
+$ scp -i ../terraform-kube/kvm/.ssh-default/id_rsa.key -o StrictHostKeyChecking=no docker.crt root@192.168.122.11:/root
+$ ssh -i ../terraform-kube/kvm/.ssh-default/id_rsa.key -o StrictHostKeyChecking=no root@192.168.122.11
 
-$ sudo systemctl restart rke2-server
+$ cp docker* /etc/pki/ca-trust/source/anchors/
+$ update-ca-trust
+# admin / 1 로 로그인
+$ nerdctl loing docker.kw01 # hosts 파일에 dns entry 추가
 
-# 워커노드도 동일하게 적용해 줍니다.
-$ cat << EOF | sudo tee /etc/rancher/rke2/registries.yaml
-mirrors:
-  $MY_NODE1_IP:30005:
-    endpoint:
-      - http://$MY_NODE1_IP:30005
-configs:
-  $MY_NODE1_IP:30005:
-    auth:
-      username: admin 
-      password: 1 
-    tls:
-      insecure_skip_verify: true
-EOF
+$ vi /etc/containerd/containerd.toml
 
-$ sudo systemctl restart rke2-agent
+[plugins]
+  [plugins."io.containerd.grpc.v1.cri"]
+   [plugins."io.containerd.grpc.v1.cri".containerd]
+      [plugins."io.containerd.grpc.v1.cri".containerd.runtimes]
+        [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
+          runtime_type = "io.containerd.runc.v2"
+          [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+            SystemdCgroup = true
+      [plugins."io.containerd.grpc.v1.cri".registry]
+        [plugins."io.containerd.grpc.v1.cri".registry.mirrors]
+          [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.kw01"]
+            endpoint = ["https://docker.kw01"]
+            [plugins."io.containerd.grpc.v1.cri".registry.configs."docker.kw01".tls]
+              ca_file = "/etc/pki/ca-trust/source/anchors/docker.crt"
+              cert_file = "/etc/pki/ca-trust/source/anchors/docker.crt"
+              key_file = "/etc/pki/ca-trust/source/anchors/docker.key"
 
+$ systemctl restart containerd
 
-# 아래 파일에 insecure 및 인증 설정 추가 확인 
-$ sudo cat /var/lib/rancher/rke2/agent/etc/containerd/config.toml
 ```
 
 ---
