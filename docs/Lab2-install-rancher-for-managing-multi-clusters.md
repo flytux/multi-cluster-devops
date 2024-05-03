@@ -17,6 +17,8 @@ $ kubectl get nodes
 
 
 # ingress-controller 설치
+
+$ k taint node mgmt1.kubeworks.net node-role.kubernetes.io/control-plane:NoSchedule-
 $ helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 $ helm repo update
 $ helm upgrade -i ingress-nginx ingress-nginx/ingress-nginx -n ingress-nginx --create-namespace \
