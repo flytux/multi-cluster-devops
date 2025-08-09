@@ -71,7 +71,7 @@ spec:
     script: |
       #!/usr/bin/env sh
       #set -e
-      argocd login $ARGOCD_SERVER --username $ARGO_USER_ID --password $ARGO_USER_PASSWORD --insecure
+      argocd login $ARGOCD_SERVER --username $ARGO_USER_ID --password $ARGO_USER_PASSWORD --plaintext
       argocd app sync $(inputs.params.argo-app-name) --insecure
       exit 0
       #argocd app wait $(inputs.params.argo-app-name) --sync --health --operation --insecure
